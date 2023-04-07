@@ -1,6 +1,6 @@
 library(tidyverse)
 
-life <- read_csv("/Users/stuartsumner/Desktop/Senior Year/DataSci Spring/Final/data/life_expectancy_initial.csv")
+life <- read_csv("data/raw/life_expectancy_initial.csv")
 skimr::skim(life)
 
 colnames <- c("Country", "Following_year", "Following_life_expect")
