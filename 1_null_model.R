@@ -3,14 +3,10 @@
 #load packages
 library(tidyverse)
 library(tidymodels)
-library(patchwork)
-
-#handle common conflicts
 tidymodels_prefer()
 
-
 # set seed
-set.seed(2468)
+set.seed(4444)
 
 # load required objects ----
 load("initial_setup/tuning_setup.rda")
@@ -20,18 +16,18 @@ null_spec <-
   set_engine("parsnip") %>% 
   set_mode("regression")
 
-
 null_wflow <- 
   workflow() %>% 
   add_model(null_spec) %>% 
-  add_recipe(life_expec_recipe)
+  add_recipe(basic_recipe)
 
-null_tune <- 
-  null_wflow %>% 
-  tune_grid(
-    resamples = life_expec_fold
-  )
+null_tune <- fit_resamples(
+  null_wflow,
+  resamples = life_folds
+)
 
-# write out results
+null_results <- null_tune %>% 
+  collect_metrics()
 
-save(null_tune, null_wflow, file = "results/fit_null.rda")
+# save results
+save(null_wflow, null_tune, null_wflow, file = "results/null_fit.rda")

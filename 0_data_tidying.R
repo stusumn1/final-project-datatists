@@ -1,5 +1,6 @@
 set.seed(4444)
 
+## load packages
 library(tidyverse)
 library(tidymodels)
 tidymodels_prefer()
@@ -42,6 +43,7 @@ basic_recipe <- recipe(following_life_expect ~ ., data = life_train) %>%
   step_rm(thinness_ten_nineteen_years) %>% 
   step_dummy(region, developed) %>% 
   step_normalize(all_numeric_predictors()) %>% 
+  step_nzv() %>% 
   prep()
 
 bake(basic_recipe, new_data = NULL)
