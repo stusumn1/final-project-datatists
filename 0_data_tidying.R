@@ -1,3 +1,6 @@
+# data tidying -----
+
+# set seed
 set.seed(4444)
 
 ## load packages

@@ -1,0 +1,43 @@
+---
+title: "Life Expectancy Progress Memo 1"
+subtitle: "Data Science 2 with R (STAT 301-2)"
+author: "Alice Meng, Nina Meng, PLEASE WRITE YOUR NAMES HERE SORRY IDK YOUR LAST NAMES "
+
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    embed-resources: true
+    echo: false
+    link-external-newwindow: true
+    
+execute:
+  warning: false
+  message: false
+  
+from: markdown+emoji 
+---
+
+## Link to Github Repo
+[link](link)
+
+## Explanation of the Prediction Problem
+We will be predicting life expectancy for the year 2015 using data from life expectancies of previous years (2000-2014) as well as predictors that can affect life expectancy, such as region, illess prevalence, and economic status. This will be a regression problem, with data from INSERT DATA LINK & details 
+
+## Overview of the Dataset
+There are a total of 3043 observations with 24(update) predictor variables. The variable types include numeric for variables such as adult mortality, Hepatitis-B immunization rates, and schooling, as well as factor variables for geographic region and binary variables for economic status (whether the countries are developed or developing). 
+
+The target variable will be life expectancy of 2015 (the following year). 
+
+[Describe any special issues or challenges that occurred when collecting or forming your dataset] (@Stuart do you wanna talk about this one since I think you could describe it in more detail than i could)
+
+### Target Variable Distribution
+
+```{r}
+library(tidyverse)
+(load data here)
+life %>% 
+  skimr::skim_without_charts(following_life_expect)
+```
+
+### Missingness Assessment
