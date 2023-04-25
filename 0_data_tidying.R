@@ -35,7 +35,7 @@ life_test <- life %>%
   select(-1, -3, -19, -20, -22)
 
 life_train <-  life %>% 
-  filter(year != 2014 & year != 2015) %>% 
+  filter(year != 2014 & year != 2015 & year != 1999) %>% 
   select(-1, -3, -19, -20, -22)
 
 ## create folds
@@ -43,13 +43,20 @@ life_folds <- vfold_cv(life_train, v = 10, repeats = 3)
 
 ## create initial recipe
 basic_recipe <- recipe(following_life_expect ~ ., data = life_train) %>% 
-  step_rm(thinness_ten_nineteen_years) %>% 
   step_dummy(region, developed) %>% 
   step_normalize(all_numeric_predictors()) %>% 
   step_nzv() %>% 
   prep()
 
-bake(basic_recipe, new_data = NULL)
+filtered_recipe <- recipe(following_life_expect ~ ., data = life_train) %>% 
+  step_corr(all_numeric_predictors(), threshold = .7) %>% 
+  step_dummy(region, developed) %>% 
+  step_normalize(all_numeric_predictors()) %>% 
+  step_nzv() %>% 
+  prep()
+
+bake(basic_recipe, new_data = NULL) %>% 
+  colnames()
 
 ## save some initial setup
 keep_pred <- control_grid(save_pred = T, save_workflow = T)
@@ -61,5 +68,6 @@ save(life_test,
      life_train, 
      life_folds, 
      basic_recipe,
+     filtered_recipe,
      keep_pred, 
      life_metrics, file = "initial_setup/tuning_setup.rda")

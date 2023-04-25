@@ -1,7 +1,7 @@
 ---
 title: "Life Expectancy Progress Memo 1"
 subtitle: "Data Science 2 with R (STAT 301-2)"
-author: "Alice Meng, Nina Meng, PLEASE WRITE YOUR NAMES HERE SORRY IDK YOUR LAST NAMES "
+author: "Alice Meng, Nina Meng, Stuart Sumner, Emiliano Ghislieri"
 
 format:
   html:
@@ -18,6 +18,18 @@ execute:
 from: markdown+emoji 
 ---
 
+``` {r}
+
+set.seed(4444)
+
+library(ggcorrplot)
+library(tidyverse)
+library(tidymodels)
+tidymodels_prefer()
+load("initial_setup/tuning_setup.rda")
+
+```
+
 ## Link to Github Repo
 [link](link)
 
@@ -31,13 +43,32 @@ The target variable will be life expectancy of 2015 (the following year).
 
 [Describe any special issues or challenges that occurred when collecting or forming your dataset] (@Stuart do you wanna talk about this one since I think you could describe it in more detail than i could)
 
-### Target Variable Distribution
+### Missingness Assessment
 
 ```{r}
-library(tidyverse)
-(load data here)
-life %>% 
+
+life_train %>% 
   skimr::skim_without_charts(following_life_expect)
 ```
 
-### Missingness Assessment
+### Collinearity Assessment
+
+``` {r}
+
+corrplotdata = life_train %>% 
+  select(-1, -19)
+
+corr = round(cor(corrplotdata), 1)
+ggcorrplot(corr)
+```
+
+
+### Target Variable Distribution
+
+``` {r}
+
+life_train %>% 
+  ggplot(aes(following_life_expect)) +
+  geom_histogram() +
+  theme_minimal()
+```
