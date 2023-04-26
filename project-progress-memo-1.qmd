@@ -18,10 +18,10 @@ execute:
 from: markdown+emoji 
 ---
 
-``` {r}
-
+```{r}
+# set seed
 set.seed(4444)
-
+# load packages + data
 library(ggcorrplot)
 library(tidyverse)
 library(tidymodels)
@@ -31,29 +31,33 @@ load("initial_setup/tuning_setup.rda")
 ```
 
 ## Link to Github Repo
-[link](link)
+
+[Github Repo Link](https://github.com/STAT301-3-2023SP/final-project-datatists)
 
 ## Explanation of the Prediction Problem
-We will be predicting life expectancy for the year 2015 using data from life expectancies of previous years (2000-2014) as well as predictors that can affect life expectancy, such as region, illess prevalence, and economic status. This will be a regression problem, with data from INSERT DATA LINK & details 
+
+We will be predicting life expectancy for the year 2015 using data from life expectancies of previous years (2000-2014) as well as predictors that can affect life expectancy, such as region, illness prevalence, and economic status. This will be a regression problem, with [Life Expectancy data](https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated) from WHO.
 
 ## Overview of the Dataset
-There are a total of 3043 observations with 24(update) predictor variables. The variable types include numeric for variables such as adult mortality, Hepatitis-B immunization rates, and schooling, as well as factor variables for geographic region and binary variables for economic status (whether the countries are developed or developing). 
 
-The target variable will be life expectancy of 2015 (the following year). 
+There are a total of 3043 observations with 19 predictor variables. The variable types include numeric for variables such as adult mortality, Hepatitis-B immunization rates, and schooling, as well as factor variables for geographic region and binary variables for economic status (whether the countries are developed or developing).
 
-[Describe any special issues or challenges that occurred when collecting or forming your dataset] (@Stuart do you wanna talk about this one since I think you could describe it in more detail than i could)
+The target variable will be life expectancy in 2015. We split the data into training and testing datasets, with life expectancy from 2000-2013 in the training dataset, and 2014 life expectancy in the testing dataset. With this split, the previous year's life expectancy will be used to predict the next year's life expectancy; but for this prediction problem, we will specifically be predicting and evaluating life expectancy for the year 2015.
+
+\[Describe any special issues or challenges that occurred when collecting or forming your dataset\] (@Stuart do you wanna talk about this one since I think you could describe it in more detail than i could)
 
 ### Missingness Assessment
 
 ```{r}
-
 life_train %>% 
   skimr::skim_without_charts(following_life_expect)
 ```
 
+The data is relatively clean, and there is no missing data.
+
 ### Collinearity Assessment
 
-``` {r}
+```{r}
 
 corrplotdata = life_train %>% 
   select(-1, -19)
@@ -62,13 +66,20 @@ corr = round(cor(corrplotdata), 1)
 ggcorrplot(corr)
 ```
 
+We conducted a collinearity assessment to ensure no two variables were correlated past a threshold of 0.7. A number of variables have high correlations, such as under_five_deaths and infant_deaths. Thus, we created a second recipe with step_corr with a correlation threshold of 0.7, which would remove the variables with a correlation coefficient higher than 0.7. We will use this second recipe on our best performing models after running the basic first recipe to see if model performance further improves.
 
 ### Target Variable Distribution
 
-``` {r}
+```{r}
 
 life_train %>% 
   ggplot(aes(following_life_expect)) +
   geom_histogram() +
   theme_minimal()
 ```
+
+The target variable (2015 life expectancy) peaks at around 70-80 years, before significantly decreasing at \~83 years.
+
+### Model Comparison & Final Model Evaluation
+
+We will be using the following models: boosted tree, elastic net, k-nearest-neighbors, logistic model, MARS, neural network, random forest, SVM polynomial, and SVM radial. For resampling, we split the data into 10 folds with 3 repeats, which provides a good sampling of data to work with without extending model run times significantly. Our evaluation metrics will likely be "accuracy" and "ROC_AUC", with a confusion matrix to see where the model accurately predicted values and where it mis-predicted values. After we run the evaluation metrics on all of our models and identify the best performing model, we will fit that model to the testing dataset and add the second recipe to see if it further improves performance.
