@@ -1,0 +1,45 @@
+---
+title: "Life Expectancy Progress Memo 2"
+subtitle: "Data Science 2 with R (STAT 301-2)"
+author: "Alice Meng, Nina Meng, Stuart Sumner, Emiliano Ghislieri"
+
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    embed-resources: true
+    echo: false
+    link-external-newwindow: true
+    
+execute:
+  warning: false
+  message: false
+  
+from: markdown+emoji 
+---
+
+```{r}
+# set seed
+set.seed(4444)
+# load packages + data
+library(ggcorrplot)
+library(tidyverse)
+library(tidymodels)
+tidymodels_prefer()
+load("initial_setup/tuning_setup.rda")
+
+```
+
+## Link to Github Repo
+
+[Github Repo Link](https://github.com/STAT301-3-2023SP/final-project-datatists)
+
+## Basic Recipes
+The first recipe is a kitchen sink which encompasses all of the variables. The second 
+recipe includes `step_corr` to remove variables that have high correlation with each other.
+
+## Assessment Measure
+RMSE will be used for model comparison and selection.
+
+## Baseline Models
+Our null model had a 
