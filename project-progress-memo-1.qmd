@@ -42,9 +42,10 @@ We will be predicting life expectancy for the year 2015 using data from life exp
 
 There are a total of 3043 observations with 19 predictor variables. The variable types include numeric for variables such as adult mortality, Hepatitis-B immunization rates, and schooling, as well as factor variables for geographic region and binary variables for economic status (whether the countries are developed or developing).
 
-The target variable will be life expectancy in 2015. We split the data into training and testing datasets, with life expectancy from 2000-2013 in the training dataset, and 2014 life expectancy in the testing dataset. With this split, the previous year's life expectancy will be used to predict the next year's life expectancy; but for this prediction problem, we will specifically be predicting and evaluating life expectancy for the year 2015.
+This data is originally formatted as a tidy table of average life expectancy by country and year with corresponding health measures. To avoid using a time-series analysis, we rearranged the data such that each country and year contained the average life expectancy from that year as well as the following year's average life expectancy. For example, the USA data from 2013 would contain both the average life expectancy in 2013 and the average life expectancy from 2014. This allows us to use the following year's life expectancy as our outcome variable (and the current year's as a predictor).
 
-\[Describe any special issues or challenges that occurred when collecting or forming your dataset\] (@Stuart do you wanna talk about this one since I think you could describe it in more detail than i could)
+The target variable will be average life expectancy in 2015. The data was split into training and testing datasets, with the current year's life expectancy from 2000-2013 in the training data, and those from 2014 in the testing data. Because of how we arranged our data, our model will be trained to predict the following year's life expectancy — because we have only up to 2015's actual values, we will be assessing how well our model does in predicting the life expectancy following 2014.
+
 
 ### Missingness Assessment
 
@@ -78,7 +79,7 @@ life_train %>%
   theme_minimal()
 ```
 
-The target variable (2015 life expectancy) peaks at around 70-80 years, before significantly decreasing at \~83 years.
+The distribution in our target variable (2015 life expectancy) peaks at around 70-80 years, before significantly decreasing at \~83 years.
 
 ### Model Comparison & Final Model Evaluation
 
