@@ -1,59 +1,78 @@
-#rf
+# random forest tuning ----
 
 # load packages
 library(tidyverse)
 library(tidymodels)
 library(patchwork)
+library(tictoc)
+library(doMC)
 
 # handle common conflicts
 tidymodels_prefer()
 
-
 # set seed
-set.seed(2468)
+set.seed(4444)
+
+# set up parallel processing 
+registerDoMC(cores = 8) 
 
 # load required objects ----
 load("initial_setup/tuning_setup.rda")
 
 # define model ----
-
 rf_spec <- 
   rand_forest(mtry = tune(),
               min_n = tune()) %>%
   set_engine("ranger") %>% 
   set_mode("regression")
 
+# basic_recipe %>%
+#   prep() %>%
+#   bake(new_data = NULL) %>%
+#   ncol()
 
 rf_params <- hardhat::extract_parameter_set_dials(rf_spec) %>% 
   update(
-    # using a range of one to 4 because there are seven available columns
-    mtry = mtry(range = c(1, 4))
+    mtry = mtry(range = c(1, 25))
   )
 
 
 # define grid
 rf_grid <- grid_regular(rf_params, levels = 5)
 
-
 # workflow ----
-
 rf_wflow <-
   workflow() %>% 
   add_model(rf_spec) %>% 
-  add_recipe(life_expec_recipe)
-
+  add_recipe(basic_recipe)
 
 # tuning
 rf_tune <-
   rf_wflow %>% 
   tune_grid(
-    resamples = life_expec_fold,
-    grid = rf_grid
+    resamples = life_folds,
+    grid = rf_grid,
+    control = keep_pred,
+    metrics = life_metrics
   )
 
+tic.clearlog()
+tic("Random Forest")
 
+# Pace tuning code in hear
+toc(log = TRUE)
+
+# save runtime info
+time_log <- tic.log(format = FALSE)
+
+rf_tictoc <- tibble(
+  model = time_log[[1]]$msg,
+  start_time = time_log[[1]]$tic,
+  end_time = time_log[[1]]$toc,
+  runtime = end_time - start_time
+)
 
 # write out results
-save(rf_tune, rf_wflow, file = "results/tune_rf.rda")
+save(rf_tune, rf_wflow, rf_tictoc, file = "results/rf_tune.rda")
 
 
