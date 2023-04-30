@@ -29,7 +29,7 @@ knn_spec <-
 # setup tuning grid 
 knn_params <- hardhat::extract_parameter_set_dials(knn_spec) %>% 
   update(
-    neighbors = neighbors(range = c(1,20))
+    neighbors = neighbors(range = c(1, 20))
   )
 
 # define grid
@@ -46,8 +46,13 @@ knn_tune <-
   knn_workflow %>% 
   tune_grid(
     resamples = life_folds,
-    grid = knn_grid
+    grid = knn_grid,
+    control = keep_pred,
+    metrics = life_metrics
   )
+
+tic.clearlog()
+tic("KNN")
 
 # Pace tuning code in hear
 toc(log = TRUE)
