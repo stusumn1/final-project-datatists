@@ -84,3 +84,6 @@ The distribution in our target variable (2015 life expectancy) peaks at around 7
 ### Model Comparison & Final Model Evaluation
 
 We will be using the following models: boosted tree, elastic net, k-nearest-neighbors, logistic model, MARS, neural network, random forest, SVM polynomial, and SVM radial. For resampling, we split the data into 10 folds with 3 repeats, which provides a good sampling of data to work with without extending model run times significantly. Our evaluation metrics will likely be RMSE and R^2 and MAE, with RMSE as the initial standard of comparison for model selection. After we run the evaluation metrics on all of our models and identify the two best performing models, we will fit that model to the testing dataset and add the second recipe to see if it further improves performance.
+
+### Works Cited
+Gochiashvili, Lasha, 2023, "Life Expectancy (WHO) Fixed", <https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated>
