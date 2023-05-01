@@ -4,6 +4,7 @@
 library(tidyverse)
 library(tidymodels)
 library(patchwork)
+library(tictoc)
 
 # handle common conflicts
 tidymodels_prefer()
@@ -30,7 +31,7 @@ hardhat::extract_parameter_set_dials(bt_spec)
 # setup tuning grid 
 bt_params <- hardhat::extract_parameter_set_dials(bt_spec) %>% 
   update(
-    mtry = mtry(range = c(1, 4)),
+    mtry = mtry(range = c(1, 10)),
     learn_rate = learn_rate(range = c(-5, -0.2))
   )
 
@@ -42,16 +43,35 @@ bt_grid <- grid_regular(bt_params, levels = 5)
 bt_workflow <-
   workflow() %>% 
   add_model(bt_spec) %>% 
-  add_recipe(life_expec_recipe) 
+  add_recipe(basic_recipe) 
+
+# Tuning/fitting ----
+tic.clearlog()
+tic("Boosted Tree")
 
 # tuning
 bt_tune <-
   bt_workflow %>% 
   tune_grid(
-    resamples = life_expec_fold,
-    grid = bt_grid
+    resamples = life_folds,
+    grid = bt_grid,
+    control = keep_pred,
+    metrics = life_metrics
   )
+
+toc(log = TRUE)
+
+# save runtime info
+time_log <- tic.log(format = FALSE)
+
+bt_tictoc <- tibble::tibble(
+  model = time_log[[1]]$msg,
+  start_time = time_log[[1]]$tic,
+  end_time = time_log[[1]]$toc,
+  runtime = end_time - start_time
+)
+
 
 
 # write out results
-save(bt_tune, bt_workflow, file = "results/tune_bt.rda")
+save(bt_tune, bt_workflow, bt_tictoc, file = "results/tune_bt.rda")

@@ -1,0 +1,89 @@
+---
+title: "Life Expectancy Final Report"
+subtitle: "Data Science 2 with R (STAT 301-2)"
+author: "Alice Meng, Nina Meng, Stuart Sumner, Emiliano Ghislieri"
+
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    embed-resources: true
+    echo: false
+    link-external-newwindow: true
+    
+execute:
+  warning: false
+  message: false
+  
+from: markdown+emoji 
+---
+
+## Introduction
+
+For our final project, our group is predicting life expectancy of countries based on variables such as economic conditions and health outcomes. 
+
+Our first recipe was an all encompassing kitchen sink model. 
+
+
+```{r}
+# Load package(s) ----
+library(tidymodels)
+library(tidyverse)
+
+
+# handle common conflicts 
+tidymodels_prefer()
+
+# load required objects 
+# list.files("results", pattern = "*.rda", full.names = TRUE)
+#   for(i in "results") {
+#     load(i)
+#   }
+
+load("results/tune_bt.rda")
+
+load("results/tune_en.rda")
+
+load("results/knn_tune.rda")
+
+load("results/mars_tune.rda")
+
+load("results/rf_tune.rda")
+
+load("results/svm_poly_tune.rda")
+
+load("results/svm_radial_tune.rda")
+
+load("results/nn_tune.rda")
+
+
+load("initial_setup/tuning_setup.rda")
+
+# compare models
+model_set <- 
+  as_workflow_set( 
+    "elastic net" = elastic_net_tune,
+    "random forest" = rf_tune,
+    "k nearest neighbor" = knn_tune,
+    "boosted tree" = bt_tune,
+    "neural network" = nn_tune,
+    "svm polynomial" = svm_poly_tune,
+    "svm radial" = svm_radial_tune,
+    "mars" = mars_tune
+  )
+
+
+
+
+temp <- model_set %>% 
+  collect_metrics() %>% 
+  filter(.metric == "rmse") %>% 
+  slice_max(order_by = mean, by = wflow_id) %>% 
+  DT::datatable() 
+
+temp
+
+```
+
+## Kitchen Sink Results
+As we can see from this table, elastic net and k nearest neighbor had the lowest rmses. 
