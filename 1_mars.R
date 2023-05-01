@@ -26,7 +26,7 @@ mars_spec <- mars(
 # set-up tuning grid ----
 mars_params <- hardhat::extract_parameter_set_dials(mars_spec) %>% 
   update(
-    num_terms = num_terms(range = c(1, 45))
+    num_terms = num_terms(range = c(1, 39))
   )
 
 # define tuning grid
