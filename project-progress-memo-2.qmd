@@ -27,6 +27,7 @@ library(tidyverse)
 library(tidymodels)
 tidymodels_prefer()
 load("initial_setup/tuning_setup.rda")
+load("results/null_fit.rda")
 
 ```
 
@@ -39,7 +40,18 @@ The first recipe is a kitchen sink which encompasses all of the variables. The s
 recipe includes `step_corr` to remove variables that have high correlation with each other.
 
 ## Assessment Measure
-RMSE will be used for model comparison and selection.
+RMSE will be used for model comparison and selection. However, our overall metric set will include 
+Rsq and MAE, and tuning time will be used if metrics are similar between two models.
 
 ## Baseline Models
-Our null model had a 
+Our null model had a RMSE of 9.47 years. 
+
+```{r}
+null_results <- null_tune %>% 
+  collect_metrics()
+null_results
+```
+
+
+## Issues
+There were no major issues that we had when fitting our models. 

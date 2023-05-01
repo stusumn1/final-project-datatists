@@ -2539,6 +2539,7 @@ vertical-align: -.125em;
   <li><a href="#basic-recipes" id="toc-basic-recipes" class="nav-link" data-scroll-target="#basic-recipes">Basic Recipes</a></li>
   <li><a href="#assessment-measure" id="toc-assessment-measure" class="nav-link" data-scroll-target="#assessment-measure">Assessment Measure</a></li>
   <li><a href="#baseline-models" id="toc-baseline-models" class="nav-link" data-scroll-target="#baseline-models">Baseline Models</a></li>
+  <li><a href="#issues" id="toc-issues" class="nav-link" data-scroll-target="#issues">Issues</a></li>
   </ul>
 </nav>
 </div>
@@ -2580,11 +2581,24 @@ vertical-align: -.125em;
 </section>
 <section id="assessment-measure" class="level2">
 <h2 class="anchored" data-anchor-id="assessment-measure">Assessment Measure</h2>
-<p>RMSE will be used for model comparison and selection.</p>
+<p>RMSE will be used for model comparison and selection. However, our overall metric set will include Rsq and MAE, and tuning time will be used if metrics are similar between two models.</p>
 </section>
 <section id="baseline-models" class="level2">
 <h2 class="anchored" data-anchor-id="baseline-models">Baseline Models</h2>
 <p>Our null model had a</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  .metric .estimator   mean     n std_err .config             
+  &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+1 rmse    standard     9.47    30  0.0661 Preprocessor1_Model1
+2 rsq     standard   NaN        0 NA      Preprocessor1_Model1</code></pre>
+</div>
+</div>
+</section>
+<section id="issues" class="level2">
+<h2 class="anchored" data-anchor-id="issues">Issues</h2>
+<p>There were no major issues that we had when fitting our models.</p>
 </section>
 
 </main>
