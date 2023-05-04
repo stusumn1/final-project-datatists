@@ -21,9 +21,11 @@ null_wflow <-
   add_model(null_spec) %>% 
   add_recipe(basic_recipe)
 
+
 null_tune <- fit_resamples(
   null_wflow,
-  resamples = life_folds
+  resamples = life_folds,
+  control = control_resamples(save_pred = TRUE)
 )
 
 null_results <- null_tune %>% 
