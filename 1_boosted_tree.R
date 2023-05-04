@@ -1,4 +1,4 @@
-#bt
+#Boosted Trees
 
 # load packages
 library(tidyverse)
@@ -8,7 +8,6 @@ library(tictoc)
 
 # handle common conflicts
 tidymodels_prefer()
-
 
 # set seed
 set.seed(2468)
@@ -31,7 +30,7 @@ hardhat::extract_parameter_set_dials(bt_spec)
 # setup tuning grid 
 bt_params <- hardhat::extract_parameter_set_dials(bt_spec) %>% 
   update(
-    mtry = mtry(range = c(1, 10)),
+    mtry = mtry(range = c(1, 5)),
     learn_rate = learn_rate(range = c(-5, -0.2))
   )
 
@@ -70,8 +69,6 @@ bt_tictoc <- tibble::tibble(
   end_time = time_log[[1]]$toc,
   runtime = end_time - start_time
 )
-
-
 
 # write out results
 save(bt_tune, bt_workflow, bt_tictoc, file = "results/tune_bt.rda")
