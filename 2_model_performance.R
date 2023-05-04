@@ -48,14 +48,21 @@ model_set <-
     "mars" = mars_tune
   )
 
+#Should not be like this? The code bellow this is giving me error.
 
+# temp <- model_set %>%
+#   collect_metrics() %>%
+#   filter(.metric == "rmse") %>%
+#   group_by(wflow_id) %>%
+#   slice_max(order_by = mean) %>%
+#   DT::datatable()
 
 
 temp <- model_set %>% 
   collect_metrics() %>% 
   filter(.metric == "rmse") %>% 
   slice_max(order_by = mean, by = wflow_id) %>% 
-  DT::datatable() 
+  DT::datatable()
 
 temp %>% 
   select(wflow_id, mean) %>% 
