@@ -30,7 +30,7 @@ hardhat::extract_parameter_set_dials(bt_spec)
 # setup tuning grid 
 bt_params <- hardhat::extract_parameter_set_dials(bt_spec) %>% 
   update(
-    mtry = mtry(range = c(1, 5)),
+    mtry = mtry(range = c(1, 10)),
     learn_rate = learn_rate(range = c(-5, -0.2))
   )
 
