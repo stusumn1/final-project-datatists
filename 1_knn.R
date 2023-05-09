@@ -42,6 +42,10 @@ knn_workflow <-
   add_recipe(basic_recipe)
 
 # tuning
+
+tic.clearlog()
+tic("KNN")
+
 knn_tune <-
   knn_workflow %>% 
   tune_grid(
@@ -50,9 +54,6 @@ knn_tune <-
     control = keep_pred,
     metrics = life_metrics
   )
-
-tic.clearlog()
-tic("KNN")
 
 # Pace tuning code in hear
 toc(log = TRUE)

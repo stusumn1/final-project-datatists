@@ -47,6 +47,10 @@ rf_wflow <-
   add_recipe(basic_recipe)
 
 # tuning
+
+tic.clearlog()
+tic("Random Forest")
+
 rf_tune <-
   rf_wflow %>% 
   tune_grid(
@@ -55,9 +59,6 @@ rf_tune <-
     control = keep_pred,
     metrics = life_metrics
   )
-
-tic.clearlog()
-tic("Random Forest")
 
 # Pace tuning code in hear
 toc(log = TRUE)
@@ -74,5 +75,3 @@ rf_tictoc <- tibble(
 
 # write out results
 save(rf_tune, rf_wflow, rf_tictoc, file = "results/rf_tune.rda")
-
-

@@ -70,5 +70,7 @@ bt_tictoc <- tibble::tibble(
   runtime = end_time - start_time
 )
 
+bt_tune %>% collect_metrics()
+
 # write out results
 save(bt_tune, bt_workflow, bt_tictoc, file = "results/tune_bt.rda")

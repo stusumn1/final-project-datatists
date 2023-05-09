@@ -61,4 +61,3 @@ en_tictoc <- tibble::tibble(
 )
 
 save(elastic_net_tune, elastic_net_wflow, en_tictoc, file = "results/tune_en.rda")
-

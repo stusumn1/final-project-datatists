@@ -39,7 +39,7 @@ life_train <-  life %>%
   select(-1, -3, -19, -20, -22)
 
 ## create folds
-life_folds <- vfold_cv(life_train, v = 10, repeats = 3)
+life_folds <- vfold_cv(life_train, v = 5, repeats = 3)
 
 ## create initial recipe
 basic_recipe <- recipe(following_life_expect ~ ., data = life_train) %>% 
