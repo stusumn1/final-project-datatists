@@ -35,7 +35,7 @@ bt_params <- hardhat::extract_parameter_set_dials(bt_spec) %>%
   )
 
 # define grid
-bt_grid <- grid_regular(bt_params, levels = 3)
+bt_grid <- grid_regular(bt_params, levels = 5)
 
 # workflow ----
 
