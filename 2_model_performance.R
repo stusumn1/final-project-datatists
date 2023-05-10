@@ -50,11 +50,11 @@ model_set <-
 
 #Should not be like this? The code bellow this is giving me error.
 
-temp <- model_set %>%
-  collect_metrics() %>%
-  filter(.metric == "rmse") %>%
-  group_by(wflow_id) %>%
-  slice_min(order_by = mean)
+# temp <- model_set %>%
+#   collect_metrics() %>%
+#   filter(.metric == "rmse") %>%
+#   group_by(wflow_id) %>%
+#   slice_min(order_by = mean)
 
 View(
   rank_results(model_set, rank_metric = "rmse") %>% 
