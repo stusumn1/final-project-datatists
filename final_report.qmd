@@ -78,7 +78,7 @@ model_set <-
 temp <- model_set %>% 
   collect_metrics() %>% 
   filter(.metric == "rmse") %>% 
-  slice_max(order_by = mean, by = wflow_id) %>% 
+  slice_min(order_by = mean, by = wflow_id) %>% 
   DT::datatable() 
 
 temp

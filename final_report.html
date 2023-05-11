@@ -2813,29 +2813,31 @@ vertical-align: -.125em;
       document.body.style.height = "100%";
       document.documentElement.style.width = "100%";
       document.documentElement.style.height = "100%";
-      if (cel) {
-        cel.style.position = "absolute";
-        var pad = unpackPadding(sizing.padding);
-        cel.style.top = pad.top + "px";
-        cel.style.right = pad.right + "px";
-        cel.style.bottom = pad.bottom + "px";
-        cel.style.left = pad.left + "px";
-        el.style.width = "100%";
-        el.style.height = "100%";
-      }
+      cel.style.position = "absolute";
+      var pad = unpackPadding(sizing.padding);
+      cel.style.top = pad.top + "px";
+      cel.style.right = pad.right + "px";
+      cel.style.bottom = pad.bottom + "px";
+      cel.style.left = pad.left + "px";
+      el.style.width = "100%";
+      el.style.height = "100%";
+
+      var rect = cel.getBoundingClientRect();
 
       return {
-        getWidth: function() { return cel.offsetWidth; },
-        getHeight: function() { return cel.offsetHeight; }
+        getWidth: function() { return rect.width; },
+        getHeight: function() { return rect.height; }
       };
 
     } else {
       el.style.width = px(sizing.width);
       el.style.height = px(sizing.height);
 
+      var rect = cel.getBoundingClientRect();
+
       return {
-        getWidth: function() { return el.offsetWidth; },
-        getHeight: function() { return el.offsetHeight; }
+        getWidth: function() { return rect.width; },
+        getHeight: function() { return rect.height; }
       };
     }
   }
@@ -3059,8 +3061,8 @@ vertical-align: -.125em;
 
           elementData(el, "initialized", true);
           if (bindingDef.initialize) {
-            var result = bindingDef.initialize(el, el.offsetWidth,
-              el.offsetHeight);
+            var rect = el.getBoundingClientRect();
+            var result = bindingDef.initialize(el, rect.width, rect.height);
             elementData(el, "init_result", result);
           }
         }
@@ -3102,29 +3104,30 @@ vertical-align: -.125em;
       forEach(matches, function(el) {
         var sizeObj = initSizing(el, binding);
 
+        var getSize = function(el) {
+          if (sizeObj) {
+            return {w: sizeObj.getWidth(), h: sizeObj.getHeight()}
+          } else {
+            var rect = el.getBoundingClientRect();
+            return {w: rect.width, h: rect.height}
+          }
+        };
+
         if (hasClass(el, "html-widget-static-bound"))
           return;
         el.className = el.className + " html-widget-static-bound";
 
         var initResult;
         if (binding.initialize) {
-          initResult = binding.initialize(el,
-            sizeObj ? sizeObj.getWidth() : el.offsetWidth,
-            sizeObj ? sizeObj.getHeight() : el.offsetHeight
-          );
+          var size = getSize(el);
+          initResult = binding.initialize(el, size.w, size.h);
           elementData(el, "init_result", initResult);
         }
 
         if (binding.resize) {
-          var lastSize = {
-            w: sizeObj ? sizeObj.getWidth() : el.offsetWidth,
-            h: sizeObj ? sizeObj.getHeight() : el.offsetHeight
-          };
+          var lastSize = getSize(el);
           var resizeHandler = function(e) {
-            var size = {
-              w: sizeObj ? sizeObj.getWidth() : el.offsetWidth,
-              h: sizeObj ? sizeObj.getHeight() : el.offsetHeight
-            };
+            var size = getSize(el);
             if (size.w === 0 && size.h === 0)
               return;
             if (size.w === lastSize.w && size.h === lastSize.h)
@@ -3426,7 +3429,6 @@ vertical-align: -.125em;
     return result;
   }
 })();
-
 </script>
 <style type="text/css">.dt-crosstalk-fade {
 opacity: 0.2;
@@ -5220,8 +5222,8 @@ l.each(u,function(a,b){l.fn.DataTable[a]=b});return u});
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="htmlwidget-f1f6aed8714e4f87a944" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f1f6aed8714e4f87a944">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9"],["elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars","mars"],["Preprocessor1_Model20","Preprocessor1_Model21","Preprocessor1_Model5","Preprocessor1_Model001","Preprocessor1_Model01","Preprocessor1_Model01","Preprocessor1_Model01","Preprocessor1_Model01","Preprocessor1_Model06"],["recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe"],["linear_reg","rand_forest","nearest_neighbor","boost_tree","mlp","svm_poly","svm_rbf","mars","mars"],["rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse"],["standard","standard","standard","standard","standard","standard","standard","standard","standard"],[1.0522209571045,2.84105235946574,1.12691733202466,68.9804475785468,7.37860790277462,9.72816160597816,9.72816159581886,9.40509959341456,9.40509959341456],[15,15,15,15,15,15,15,15,15],[0.00916961268551353,0.0527043383716658,0.0159865044250238,0.109171729008729,0.370073920263104,0.0924778186455582,0.0924778186248053,0.071108289383191,0.071108289383191]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>wflow_id<\/th>\n      <th>.config<\/th>\n      <th>preproc<\/th>\n      <th>model<\/th>\n      <th>.metric<\/th>\n      <th>.estimator<\/th>\n      <th>mean<\/th>\n      <th>n<\/th>\n      <th>std_err<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[7,8,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f1d004df993aa3699b14" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f1d004df993aa3699b14">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],["elastic net","elastic net","elastic net","elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars","mars","mars","mars","mars","mars","mars","mars"],["Preprocessor1_Model06","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model03","Preprocessor1_Model2","Preprocessor1_Model24","Preprocessor1_Model20","Preprocessor1_Model21","Preprocessor1_Model20","Preprocessor1_Model02","Preprocessor1_Model03","Preprocessor1_Model04","Preprocessor1_Model05","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model10"],["recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe"],["linear_reg","linear_reg","linear_reg","linear_reg","rand_forest","nearest_neighbor","boost_tree","mlp","svm_poly","svm_rbf","mars","mars","mars","mars","mars","mars","mars","mars"],["rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse"],["standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard"],[0.314947862623738,0.314947862623738,0.314947862623738,0.314947862623738,0.288486184350106,0.730425645484419,0.485775972056239,0.414803623875674,0.448359447303179,0.501263745338151,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649],[15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15],[0.00495813056436396,0.00495813056436396,0.00495813056436396,0.00495813056436396,0.00583012477490243,0.0135269350472217,0.0191837250393537,0.0232536318297965,0.00305590810209326,0.00344179884994391,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>wflow_id<\/th>\n      <th>.config<\/th>\n      <th>preproc<\/th>\n      <th>model<\/th>\n      <th>.metric<\/th>\n      <th>.estimator<\/th>\n      <th>mean<\/th>\n      <th>n<\/th>\n      <th>std_err<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[7,8,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
