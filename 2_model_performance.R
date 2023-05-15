@@ -67,7 +67,8 @@ View(
 temp <- model_set %>% 
   collect_metrics() %>% 
   filter(.metric == "rmse") %>% 
-  slice_max(order_by = mean, by = wflow_id) %>% 
+  slice_min(order_by = mean, by = wflow_id) %>% 
+  mutate(mean = round(mean, 3), std_err = round(std_err, 3)) %>% 
   DT::datatable()
 
 temp %>% 
@@ -100,17 +101,17 @@ model_type <- c("elastic net",
                 "svm radial",
                 "mars")
 
-times <- c("22.4",
-           "31.1",
-           "4.73",
-           "458",
-           "38.3",
-           "173",
-           "72.9",
-           "13")
+times <- c("18.0",
+           "247",
+           "14.1",
+           "79.0",
+           "45.8",
+           "54.0",
+           "52.6",
+           "5.42")
 
 time_tibble <- bind_cols(model_type, times)
-time_df <- as_data_frame(time_tibble)
+time_df <- as.data.frame(time_tibble)
 
 names(time_df) = c("Model Type", "Run Time (seconds)")
 
