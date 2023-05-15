@@ -1,7 +1,7 @@
 ---
 title: "Life Expectancy Progress Memo 2"
-subtitle: "Data Science 2 with R (STAT 301-2)"
-author: "Alice Meng, Nina Meng, Stuart Sumner, Emiliano Ghislieri"
+subtitle: "Data Science 3 with R (STAT 301-3)"
+authors: "Alice Meng, Nina Meng, Stuart Sumner, Emiliano Ghislieri"
 
 format:
   html:
@@ -22,18 +22,35 @@ from: markdown+emoji
 # set seed
 set.seed(4444)
 # load packages + data
-library(ggcorrplot)
 library(tidyverse)
 library(tidymodels)
 tidymodels_prefer()
 load("initial_setup/tuning_setup.rda")
 load("results/null_fit.rda")
+load("results/tune_bt.rda")
+
+load("results/tune_en.rda")
+
+load("results/knn_tune.rda")
+
+load("results/mars_tune.rda")
+
+load("results/rf_tune.rda")
+
+load("results/svm_poly_tune.rda")
+
+load("results/svm_radial_tune.rda")
+
+load("results/nn_tune.rda")
+
+
+load("initial_setup/tuning_setup.rda")
 
 ```
 
 ## Link to Github Repo
 
-[Github Repo Link](https://github.com/STAT301-3-2023SP/final-project-datatists)
+[https://github.com/STAT301-3-2023SP/final-project-datatists](https://github.com/STAT301-3-2023SP/final-project-datatists)
 
 ## Basic Recipes
 The first recipe is a kitchen sink which encompasses all of the variables. The second 
@@ -44,14 +61,70 @@ RMSE will be used for model comparison and selection. However, our overall metri
 Rsq and MAE, and tuning time will be used if metrics are similar between two models.
 
 ## Baseline Models
-Our null model had a RMSE of 9.47 years. 
+Our null model had a RMSE of 9.41 years. The results shown below are for our kitchen sink model, and we will be using the best performimg models and fit them to our second recipe which has `step_corr`. 
 
 ```{r}
 null_results <- null_tune %>% 
   collect_metrics()
-null_results
+
+null <- as.data.frame(null_results) %>% 
+  mutate(mean = round(mean, 3), std_err = round(std_err, 3))
+
+null %>% 
+  DT::datatable()
+
+# compare models
+model_set <- 
+  as_workflow_set( 
+    "elastic net" = elastic_net_tune,
+    "random forest" = rf_tune,
+    "k nearest neighbor" = knn_tune,
+    "boosted tree" = bt_tune,
+    "neural network" = nn_tune,
+    "svm polynomial" = svm_poly_tune,
+    "svm radial" = svm_radial_tune,
+    "mars" = mars_tune
+  )
+
+temp <- model_set %>% 
+  collect_metrics() %>% 
+  filter(.metric == "rmse") %>% 
+  slice_min(order_by = mean, by = wflow_id) %>% 
+  mutate(mean = round(mean, 3), std_err = round(std_err, 3)) %>% 
+  DT::datatable()
+
+temp
+
+
+model_type <- c("elastic net",
+                "random forest",
+                "k nearest neighbor",
+                "boosted tree",
+                "neural network",
+                "svm polynomial",
+                "svm radial",
+                "mars")
+# run times
+times <- c("18.0",
+           "247",
+           "14.1",
+           "79.0",
+           "45.8",
+           "54.0",
+           "52.6",
+           "5.42")
+
+time_tibble <- bind_cols(model_type, times)
+time_df <- as.data.frame(time_tibble)
+
+names(time_df) = c("Model Type", "Run Time (seconds)")
+
+time_df %>% 
+  DT::datatable()
+
 ```
 
+With all of our models run, we can look at the results and see that random forest was the best performing in regards to RMSE, with elastic net and mars models close behind. However, as we can see from the run times, the random forest had a significantly higher run time than the rest of the models.
 
 ## Issues
-There were no major issues that we had when fitting our models. 
+There were no major issues that we had when fitting our models and the run times were not an issue. 

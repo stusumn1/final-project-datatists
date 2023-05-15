@@ -69,4 +69,4 @@ knn_tictoc <- tibble(
 )
 
 # write out results
-save(knn_tune, knn_workflow, file = "results/knn_tune.rda")
+save(knn_tune, knn_tictoc, knn_workflow, file = "results/knn_tune.rda")
