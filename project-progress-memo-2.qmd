@@ -21,10 +21,14 @@ from: markdown+emoji
 ```{r}
 # set seed
 set.seed(4444)
+
 # load packages + data
 library(tidyverse)
 library(tidymodels)
+
+# handling common errors
 tidymodels_prefer()
+
 load("initial_setup/tuning_setup.rda")
 load("results/null_fit.rda")
 load("results/tune_bt.rda")
@@ -60,7 +64,7 @@ The second recipe also includes `step_corr` to remove variables that have high c
 
 ## Assessment Measure
 RMSE will be used for model comparison and selection. However, our overall metric set will include 
-Rsq and MAE, and tuning time will be used if metrics are similar between two models.
+rsq and MAE, and tuning time will be used if metrics are similar between two models.
 
 ## Baseline Models
 Our null model had a RMSE of 9.41 years. The results shown below are for our kitchen sink model, and we will be using the best performimg models and fit them to our second recipe which has `step_corr`. 
@@ -74,7 +78,12 @@ null <- as.data.frame(null_results) %>%
 
 null %>% 
   DT::datatable()
+```
 
+## Additional Models
+We also ran several other models such as Elastic Net, Random Forest, KNN, Boosted Tree, Neural Network, SVM Polynomial, SVM Radial, and MARS.
+
+```{r}
 # compare models
 model_set <- 
   as_workflow_set( 
@@ -96,8 +105,12 @@ temp <- model_set %>%
   DT::datatable()
 
 temp
+```
 
+## Running Times
+Here are the running times of all fitted models.
 
+```{r}
 model_type <- c("elastic net",
                 "random forest",
                 "k nearest neighbor",
@@ -123,10 +136,9 @@ names(time_df) = c("Model Type", "Run Time (seconds)")
 
 time_df %>% 
   DT::datatable()
-
 ```
 
 With all of our models run, we can look at the results and see that random forest was the best performing in regards to RMSE, with elastic net and mars models close behind. However, as we can see from the run times, the random forest had a significantly higher run time than the rest of the models.
 
 ## Issues
-There were no major issues that we had when fitting our models and the run times were not an issue. 
+We have not encountered major issues along the development of this project. From defining models, to recipes and running times, everything seems fine. 

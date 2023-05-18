@@ -2812,31 +2812,29 @@ vertical-align: -.125em;
       document.body.style.height = "100%";
       document.documentElement.style.width = "100%";
       document.documentElement.style.height = "100%";
-      cel.style.position = "absolute";
-      var pad = unpackPadding(sizing.padding);
-      cel.style.top = pad.top + "px";
-      cel.style.right = pad.right + "px";
-      cel.style.bottom = pad.bottom + "px";
-      cel.style.left = pad.left + "px";
-      el.style.width = "100%";
-      el.style.height = "100%";
-
-      var rect = cel.getBoundingClientRect();
+      if (cel) {
+        cel.style.position = "absolute";
+        var pad = unpackPadding(sizing.padding);
+        cel.style.top = pad.top + "px";
+        cel.style.right = pad.right + "px";
+        cel.style.bottom = pad.bottom + "px";
+        cel.style.left = pad.left + "px";
+        el.style.width = "100%";
+        el.style.height = "100%";
+      }
 
       return {
-        getWidth: function() { return rect.width; },
-        getHeight: function() { return rect.height; }
+        getWidth: function() { return cel.offsetWidth; },
+        getHeight: function() { return cel.offsetHeight; }
       };
 
     } else {
       el.style.width = px(sizing.width);
       el.style.height = px(sizing.height);
 
-      var rect = cel.getBoundingClientRect();
-
       return {
-        getWidth: function() { return rect.width; },
-        getHeight: function() { return rect.height; }
+        getWidth: function() { return el.offsetWidth; },
+        getHeight: function() { return el.offsetHeight; }
       };
     }
   }
@@ -3060,8 +3058,8 @@ vertical-align: -.125em;
 
           elementData(el, "initialized", true);
           if (bindingDef.initialize) {
-            var rect = el.getBoundingClientRect();
-            var result = bindingDef.initialize(el, rect.width, rect.height);
+            var result = bindingDef.initialize(el, el.offsetWidth,
+              el.offsetHeight);
             elementData(el, "init_result", result);
           }
         }
@@ -3103,30 +3101,29 @@ vertical-align: -.125em;
       forEach(matches, function(el) {
         var sizeObj = initSizing(el, binding);
 
-        var getSize = function(el) {
-          if (sizeObj) {
-            return {w: sizeObj.getWidth(), h: sizeObj.getHeight()}
-          } else {
-            var rect = el.getBoundingClientRect();
-            return {w: rect.width, h: rect.height}
-          }
-        };
-
         if (hasClass(el, "html-widget-static-bound"))
           return;
         el.className = el.className + " html-widget-static-bound";
 
         var initResult;
         if (binding.initialize) {
-          var size = getSize(el);
-          initResult = binding.initialize(el, size.w, size.h);
+          initResult = binding.initialize(el,
+            sizeObj ? sizeObj.getWidth() : el.offsetWidth,
+            sizeObj ? sizeObj.getHeight() : el.offsetHeight
+          );
           elementData(el, "init_result", initResult);
         }
 
         if (binding.resize) {
-          var lastSize = getSize(el);
+          var lastSize = {
+            w: sizeObj ? sizeObj.getWidth() : el.offsetWidth,
+            h: sizeObj ? sizeObj.getHeight() : el.offsetHeight
+          };
           var resizeHandler = function(e) {
-            var size = getSize(el);
+            var size = {
+              w: sizeObj ? sizeObj.getWidth() : el.offsetWidth,
+              h: sizeObj ? sizeObj.getHeight() : el.offsetHeight
+            };
             if (size.w === 0 && size.h === 0)
               return;
             if (size.w === lastSize.w && size.h === lastSize.h)
@@ -3428,6 +3425,7 @@ vertical-align: -.125em;
     return result;
   }
 })();
+
 </script>
 <style type="text/css">.dt-crosstalk-fade {
 opacity: 0.2;
@@ -5188,6 +5186,8 @@ l.each(u,function(a,b){l.fn.DataTable[a]=b});return u});
   <li><a href="#basic-recipes" id="toc-basic-recipes" class="nav-link" data-scroll-target="#basic-recipes">Basic Recipes</a></li>
   <li><a href="#assessment-measure" id="toc-assessment-measure" class="nav-link" data-scroll-target="#assessment-measure">Assessment Measure</a></li>
   <li><a href="#baseline-models" id="toc-baseline-models" class="nav-link" data-scroll-target="#baseline-models">Baseline Models</a></li>
+  <li><a href="#additional-models" id="toc-additional-models" class="nav-link" data-scroll-target="#additional-models">Additional Models</a></li>
+  <li><a href="#running-times" id="toc-running-times" class="nav-link" data-scroll-target="#running-times">Running Times</a></li>
   <li><a href="#issues" id="toc-issues" class="nav-link" data-scroll-target="#issues">Issues</a></li>
   </ul>
 </nav>
@@ -5226,11 +5226,12 @@ l.each(u,function(a,b){l.fn.DataTable[a]=b});return u});
 </section>
 <section id="basic-recipes" class="level2">
 <h2 class="anchored" data-anchor-id="basic-recipes">Basic Recipes</h2>
-<p>The first recipe is a kitchen sink which encompasses all of the variables. The second recipe includes <code>step_corr</code> to remove variables that have high correlation with each other.</p>
+<p>The first recipe is a kitchen sink which encompasses all of the variables.</p>
+<p>We used step_dummy to convert “region” and “developed” to binary variables. We then used step_normalize to center and scale all numeric predictors. Then, we used step_nzv to remove unbalanced variables or variables with zero variance. The second recipe also includes <code>step_corr</code> to remove variables that have high correlation with each other.</p>
 </section>
 <section id="assessment-measure" class="level2">
 <h2 class="anchored" data-anchor-id="assessment-measure">Assessment Measure</h2>
-<p>RMSE will be used for model comparison and selection. However, our overall metric set will include Rsq and MAE, and tuning time will be used if metrics are similar between two models.</p>
+<p>RMSE will be used for model comparison and selection. However, our overall metric set will include rsq and MAE, and tuning time will be used if metrics are similar between two models.</p>
 </section>
 <section id="baseline-models" class="level2">
 <h2 class="anchored" data-anchor-id="baseline-models">Baseline Models</h2>
@@ -5238,17 +5239,29 @@ l.each(u,function(a,b){l.fn.DataTable[a]=b});return u});
 <div class="cell">
 <div class="cell-output-display">
 
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-27cbc551b845edcd7ad0" style="width:100%;height:auto;"></div>
+<div id="htmlwidget-27cbc551b845edcd7ad0" style="width:100%;height:auto;" class="datatables html-widget"></div>
 <script type="application/json" data-for="htmlwidget-27cbc551b845edcd7ad0">{"x":{"filter":"none","vertical":false,"data":[["1","2"],["rmse","rsq"],["standard","standard"],[9.405,null],[15,0],[0.071,null],["Preprocessor1_Model1","Preprocessor1_Model1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>.metric<\/th>\n      <th>.estimator<\/th>\n      <th>mean<\/th>\n      <th>n<\/th>\n      <th>std_err<\/th>\n      <th>.config<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
+</div>
+</section>
+<section id="additional-models" class="level2">
+<h2 class="anchored" data-anchor-id="additional-models">Additional Models</h2>
+<p>We also ran several other models such as Elastic Net, Random Forest, KNN, Boosted Tree, Neural Network, SVM Polynomial, SVM Radial, and MARS.</p>
+<div class="cell">
 <div class="cell-output-display">
 
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e4a26ef0417bafdb69fd" style="width:100%;height:auto;"></div>
+<div id="htmlwidget-e4a26ef0417bafdb69fd" style="width:100%;height:auto;" class="datatables html-widget"></div>
 <script type="application/json" data-for="htmlwidget-e4a26ef0417bafdb69fd">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],["elastic net","elastic net","elastic net","elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars","mars","mars","mars","mars","mars","mars","mars"],["Preprocessor1_Model06","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model03","Preprocessor1_Model2","Preprocessor1_Model24","Preprocessor1_Model20","Preprocessor1_Model21","Preprocessor1_Model20","Preprocessor1_Model02","Preprocessor1_Model03","Preprocessor1_Model04","Preprocessor1_Model05","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model10"],["recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe"],["linear_reg","linear_reg","linear_reg","linear_reg","rand_forest","nearest_neighbor","boost_tree","mlp","svm_poly","svm_rbf","mars","mars","mars","mars","mars","mars","mars","mars"],["rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse"],["standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard"],[0.315,0.315,0.315,0.315,0.288,0.73,0.486,0.415,0.448,0.501,0.321,0.321,0.321,0.321,0.321,0.321,0.321,0.321],[15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15],[0.005,0.005,0.005,0.005,0.006,0.014,0.019,0.023,0.003,0.003,0.006,0.006,0.006,0.006,0.006,0.006,0.006,0.006]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>wflow_id<\/th>\n      <th>.config<\/th>\n      <th>preproc<\/th>\n      <th>model<\/th>\n      <th>.metric<\/th>\n      <th>.estimator<\/th>\n      <th>mean<\/th>\n      <th>n<\/th>\n      <th>std_err<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[7,8,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
+</div>
+</section>
+<section id="running-times" class="level2">
+<h2 class="anchored" data-anchor-id="running-times">Running Times</h2>
+<p>Here are the running times of all fitted models.</p>
+<div class="cell">
 <div class="cell-output-display">
 
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-578da2df47583e26131e" style="width:100%;height:auto;"></div>
+<div id="htmlwidget-578da2df47583e26131e" style="width:100%;height:auto;" class="datatables html-widget"></div>
 <script type="application/json" data-for="htmlwidget-578da2df47583e26131e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8"],["elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars"],["18.0","247","14.1","79.0","45.8","54.0","52.6","5.42"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Model Type<\/th>\n      <th>Run Time (seconds)<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
@@ -5256,7 +5269,7 @@ l.each(u,function(a,b){l.fn.DataTable[a]=b});return u});
 </section>
 <section id="issues" class="level2">
 <h2 class="anchored" data-anchor-id="issues">Issues</h2>
-<p>There were no major issues that we had when fitting our models and the run times were not an issue.</p>
+<p>We have not encountered major issues along the development of this project. From defining models, to recipes and running times, everything seems fine.</p>
 </section>
 
 </main>
