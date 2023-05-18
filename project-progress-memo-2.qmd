@@ -53,8 +53,10 @@ load("initial_setup/tuning_setup.rda")
 [https://github.com/STAT301-3-2023SP/final-project-datatists](https://github.com/STAT301-3-2023SP/final-project-datatists)
 
 ## Basic Recipes
-The first recipe is a kitchen sink which encompasses all of the variables. The second 
-recipe includes `step_corr` to remove variables that have high correlation with each other.
+The first recipe is a kitchen sink which encompasses all of the variables. 
+
+We used step_dummy to convert "region" and "developed" to binary variables. We then used step_normalize to center and scale all numeric predictors. Then, we used step_nzv to remove unbalanced variables or variables with zero variance.
+The second recipe also includes `step_corr` to remove variables that have high correlation with each other.
 
 ## Assessment Measure
 RMSE will be used for model comparison and selection. However, our overall metric set will include 
