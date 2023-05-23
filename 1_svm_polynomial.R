@@ -34,11 +34,11 @@ svm_poly_grid <- grid_regular(svm_poly_params, levels = c(3, 3, 3))
 svm_poly_workflow <-
   workflow() %>% 
   add_model(svm_poly_spec) %>%
-  add_recipe(basic_recipe)
+  add_recipe(filtered_recipe)
 
 # Tuning/fitting ----
 tic.clearlog()
-tic("Polynomial SVM")
+tic("Polynomial SVM - Filtered")
 
 svm_poly_tune <-
   svm_poly_workflow %>% 
@@ -63,4 +63,4 @@ svm_poly_tictoc <- tibble::tibble(
 )
 
 # Write out results & workflow
-save(svm_poly_tune, svm_poly_tictoc, file = "results/svm_poly_tune.rda")
+save(svm_poly_tune, svm_poly_tictoc, file = "results/svm_poly_tune_filter.rda")

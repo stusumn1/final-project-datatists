@@ -36,11 +36,11 @@ mars_grid <- grid_regular(mars_params, levels = c(5, 5))
 mars_workflow <-
   workflow() %>% 
   add_model(mars_spec) %>%
-  add_recipe(basic_recipe)
+  add_recipe(filtered_recipe)
 
 # Tuning/fitting ----
 tic.clearlog()
-tic("Mars")
+tic("Mars - Filtered")
 
 mars_tune <-
   mars_workflow %>% 
@@ -65,4 +65,4 @@ mars_tictoc <- tibble::tibble(
 )
 
 # Write out results & workflow
-save(mars_tune, mars_tictoc, file = "results/mars_tune.rda")
+save(mars_tune, mars_tictoc, file = "results/mars_tune_filter.rda")

@@ -42,11 +42,11 @@ bt_grid <- grid_regular(bt_params, levels = 5)
 bt_workflow <-
   workflow() %>% 
   add_model(bt_spec) %>% 
-  add_recipe(basic_recipe) 
+  add_recipe(filtered_recipe) 
 
 # Tuning/fitting ----
 tic.clearlog()
-tic("Boosted Tree")
+tic("Boosted Tree - Filtered")
 
 # tuning
 bt_tune <-
@@ -73,4 +73,4 @@ bt_tictoc <- tibble::tibble(
 bt_tune %>% collect_metrics()
 
 # write out results
-save(bt_tune, bt_workflow, bt_tictoc, file = "results/tune_bt.rda")
+save(bt_tune, bt_workflow, bt_tictoc, file = "results/tune_bt_filter.rda")

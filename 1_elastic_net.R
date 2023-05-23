@@ -34,11 +34,11 @@ elastic_net_grid <- grid_regular(elastic_net_params, levels = 5)
 elastic_net_wflow <-
   workflow() %>% 
   add_model(elastic_net_spec) %>% 
-  add_recipe(basic_recipe)
+  add_recipe(filtered_recipe)
 
 # Tuning/fitting ----
 tic.clearlog()
-tic("elastic net")
+tic("Elastic Net - Filtered")
 
 elastic_net_tune <-
   elastic_net_wflow %>% 
@@ -60,4 +60,4 @@ en_tictoc <- tibble::tibble(
   runtime = end_time - start_time
 )
 
-save(elastic_net_tune, elastic_net_wflow, en_tictoc, file = "results/tune_en.rda")
+save(elastic_net_tune, elastic_net_wflow, en_tictoc, file = "results/tune_en_filter.rda")

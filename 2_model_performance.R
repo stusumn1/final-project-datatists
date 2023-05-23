@@ -5,16 +5,14 @@
 # Load package(s) ----
 library(tidymodels)
 library(tidyverse)
+library(gt)
 
 
 # handle common conflicts 
 tidymodels_prefer()
 
+# basic recipe ----
 # load required objects 
-# list.files("results", pattern = "*.rda", full.names = TRUE)
-#   for(i in "results") {
-#     load(i)
-#   }
 
 load("results/tune_bt.rda")
 
@@ -48,7 +46,7 @@ model_set <-
     "mars" = mars_tune
   )
 
-#Should not be like this? The code bellow this is giving me error.
+#Should not be like this? The code below this is giving me error.
 
 # temp <- model_set %>%
 #   collect_metrics() %>%
@@ -69,6 +67,7 @@ temp <- model_set %>%
   filter(.metric == "rmse") %>% 
   slice_min(order_by = mean, by = wflow_id) %>% 
   mutate(mean = round(mean, 3), std_err = round(std_err, 3)) %>% 
+  select(-2, -3, -4, -6, -8) %>% 
   DT::datatable()
 
 temp %>% 
@@ -140,3 +139,53 @@ nn_workflow_tuned <- nn_wflow %>%
   finalize_workflow(select_best(nn_tune, metric = "roc_auc"))
 
 nn_fit <- fit(nn_workflow_tuned, wf_train)
+
+# filtered recipe ----
+# load required objects
+load("results/mars_tune_filter.rda")
+load("results/knn_tune_filter.rda")
+load("results/nn_tune_filter.rda")
+load("results/rf_tune_filter.rda")
+load("results/svm_poly_tune_filter.rda")
+load("results/svm_radial_tune_filter.rda")
+load("results/tune_bt_filter.rda")
+load("results/tune_en_filter.rda")
+
+# compare models
+  # tunes and tictoc are named the same between recipes
+  # make sure environment is correct before moving forward
+model_set <- 
+  as_workflow_set( 
+    "elastic net" = elastic_net_tune,
+    "random forest" = rf_tune,
+    "k nearest neighbor" = knn_tune,
+    "boosted tree" = bt_tune,
+    "neural network" = nn_tune,
+    "svm polynomial" = svm_poly_tune,
+    "svm radial" = svm_radial_tune,
+    "mars" = mars_tune
+  )
+
+filter_models <- model_set %>% 
+  collect_metrics() %>% 
+  filter(.metric == "rmse") %>% 
+  slice_min(order_by = mean, by = wflow_id) %>% 
+  mutate(mean = round(mean, 3), std_err = round(std_err, 3)) %>% 
+  select(-2, -3, -4, -6, -8) %>% 
+  DT::datatable()
+
+filter_models
+
+filter_tictoc <- bind_rows(en_tictoc, 
+                           rf_tictoc, 
+                           knn_tictoc, 
+                           bt_tictoc, 
+                           nn_tic_toc, 
+                           svm_poly_tictoc, 
+                           svm_radial_tictoc,
+                           mars_tictoc)
+
+gt(filter_tictoc) %>% 
+  gt::cols_hide(c(2, 3)) %>% 
+  gt::cols_label(model = "Model", runtime = "Runtime")
+

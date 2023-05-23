@@ -36,11 +36,11 @@ svm_radial_grid <- grid_regular(svm_radial_params, levels = 5)
 svm_radial_wflow <-
   workflow() %>% 
   add_model(svm_radial_spec) %>% 
-  add_recipe(basic_recipe)
+  add_recipe(filtered_recipe)
 
 # Tuning/fitting ----
 tic.clearlog()
-tic("SVM Radial")
+tic("SVM Radial - Filtered")
 
 svm_radial_tune <- 
   svm_radial_wflow %>% 
@@ -65,4 +65,4 @@ svm_radial_tictoc <- tibble(
 )
 
 # Write out results & workflow
-save(svm_radial_tune, svm_radial_tictoc, file = "results/svm_radial_tune.rda")
+save(svm_radial_tune, svm_radial_tictoc, file = "results/svm_radial_tune_filter.rda")

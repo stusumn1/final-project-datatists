@@ -39,12 +39,12 @@ knn_grid <- grid_regular(knn_params, levels = 5)
 knn_workflow <-
   workflow() %>% 
   add_model(knn_spec) %>% 
-  add_recipe(basic_recipe)
+  add_recipe(filtered_recipe)
 
 # tuning
 
 tic.clearlog()
-tic("KNN")
+tic("KNN - Filtered")
 
 knn_tune <-
   knn_workflow %>% 
@@ -69,4 +69,4 @@ knn_tictoc <- tibble(
 )
 
 # write out results
-save(knn_tune, knn_tictoc, knn_workflow, file = "results/knn_tune.rda")
+save(knn_tune, knn_tictoc, knn_workflow, file = "results/knn_tune_filter.rda")

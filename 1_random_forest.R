@@ -44,12 +44,12 @@ rf_grid <- grid_regular(rf_params, levels = 5)
 rf_wflow <-
   workflow() %>% 
   add_model(rf_spec) %>% 
-  add_recipe(basic_recipe)
+  add_recipe(filtered_recipe)
 
 # tuning
 
 tic.clearlog()
-tic("Random Forest")
+tic("Random Forest - Filtered")
 
 rf_tune <-
   rf_wflow %>% 
@@ -74,4 +74,4 @@ rf_tictoc <- tibble(
 )
 
 # write out results
-save(rf_tune, rf_wflow, rf_tictoc, file = "results/rf_tune.rda")
+save(rf_tune, rf_wflow, rf_tictoc, file = "results/rf_tune_filter.rda")

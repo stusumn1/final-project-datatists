@@ -38,11 +38,11 @@ nn_grid <- grid_regular(nn_params, levels = 5)
 nn_wflow <-
   workflow() %>% 
   add_model(nn_spec) %>% 
-  add_recipe(basic_recipe)
+  add_recipe(filtered_recipe)
 
 # tuning / fitting----
 tic.clearlog()
-tic("nn")
+tic("nn - Filtered")
 
 nn_tune <- nn_wflow %>% 
   tune_grid(
@@ -70,4 +70,4 @@ nn_tic_toc <- tibble(model = time_log[[1]]$msg,
 nn_tune %>% collect_metrics()
 
 # write out results & workflow
-save(nn_tune, nn_tic_toc, file = "results/nn_tune.rda")
+save(nn_tune, nn_tic_toc, file = "results/nn_tune_filter.rda")
