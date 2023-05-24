@@ -1,6 +1,6 @@
-# SVM (polynomial) tuning ----
+# SVM (polynomial) Tuning ----
 
-# Load package(s) ----
+# load package(s) ----
 library(tidyverse)
 library(tidymodels)
 library(tictoc)
@@ -9,13 +9,13 @@ library(doMC)
 # handle common conflicts
 tidymodels_prefer()
 
-#Setup parallel processing
+# setup parallel processing
 registerDoMC(cores = 4)
 
-# load required objects ----
+# load required objects
 load("initial_setup/tuning_setup.rda")
 
-# Define model ----
+# define model ----
 svm_poly_spec <- svm_poly(
   mode = "regression",
   cost = tune(),
@@ -24,24 +24,25 @@ svm_poly_spec <- svm_poly(
 ) %>%
   set_engine("kernlab")
 
-# set-up tuning grid ----
+# set-up tuning grid
 svm_poly_params <- hardhat::extract_parameter_set_dials(svm_poly_spec)
 
 # define tuning grid
 svm_poly_grid <- grid_regular(svm_poly_params, levels = c(3, 3, 3))
 
-# workflow ----
-svm_poly_workflow <-
+## filtered recipe----
+# workflow
+svm_poly_wflow <-
   workflow() %>% 
   add_model(svm_poly_spec) %>%
-  add_recipe(filtered_recipe)
+  add_recipe(basic_recipe)
 
-# Tuning/fitting ----
+# tuning/fitting
 tic.clearlog()
-tic("Polynomial SVM - Filtered")
+tic("Polynomial SVM")
 
 svm_poly_tune <-
-  svm_poly_workflow %>% 
+  svm_poly_wflow %>% 
   tune_grid(
     resamples = life_folds,
     grid = svm_poly_grid,
@@ -49,7 +50,6 @@ svm_poly_tune <-
     metrics = life_metrics
   )
 
-# Pace tuning code in hear
 toc(log = TRUE)
 
 # save runtime info
@@ -62,5 +62,40 @@ svm_poly_tictoc <- tibble::tibble(
   runtime = end_time - start_time
 )
 
-# Write out results & workflow
-save(svm_poly_tune, svm_poly_tictoc, file = "results/svm_poly_tune_filter.rda")
+# write out results & workflow
+save(svm_poly_tune, svm_poly_wflow, svm_poly_tictoc, file = "results/svm_poly_tune.rda")
+
+## filtered recipe----
+# workflow
+svm_poly_wflow <-
+  workflow() %>% 
+  add_model(svm_poly_spec) %>%
+  add_recipe(filtered_recipe)
+
+# tuning/fitting
+tic.clearlog()
+tic("Polynomial SVM - Filtered")
+
+svm_poly_tune <-
+  svm_poly_wflow %>% 
+  tune_grid(
+    resamples = life_folds,
+    grid = svm_poly_grid,
+    control = keep_pred,
+    metrics = life_metrics
+  )
+
+toc(log = TRUE)
+
+# save runtime info
+time_log <- tic.log(format = FALSE)
+
+svm_poly_tictoc <- tibble::tibble(
+  model = time_log[[1]]$msg,
+  start_time = time_log[[1]]$tic,
+  end_time = time_log[[1]]$toc,
+  runtime = end_time - start_time
+)
+
+# write out results & workflow
+save(svm_poly_tune, svm_poly_wflow, svm_poly_tictoc, file = "results/svm_poly_tune_filter.rda")

@@ -1,4 +1,4 @@
-# knn tuning ----
+# KNN Tuning
 
 # load packages
 library(tidyverse)
@@ -13,7 +13,7 @@ tidymodels_prefer()
 # set seed
 set.seed(2468)
 
-# load required objects ----
+# load required objects
 load("initial_setup/tuning_setup.rda")
 
 # define model ----
@@ -22,9 +22,6 @@ knn_spec <-
     neighbors = tune()) %>%
   set_engine("kknn") %>%
   set_mode('regression')
-
-# check tuning parameters
-# hardhat::extract_parameter_set_dials(knn_spec) 
 
 # setup tuning grid 
 knn_params <- hardhat::extract_parameter_set_dials(knn_spec) %>% 
@@ -35,19 +32,19 @@ knn_params <- hardhat::extract_parameter_set_dials(knn_spec) %>%
 # define grid
 knn_grid <- grid_regular(knn_params, levels = 5)
 
-# workflow ----
-knn_workflow <-
+## basic recipe----
+# workflow
+knn_wflow <-
   workflow() %>% 
   add_model(knn_spec) %>% 
-  add_recipe(filtered_recipe)
+  add_recipe(basic_recipe)
 
 # tuning
-
 tic.clearlog()
-tic("KNN - Filtered")
+tic("KNN")
 
 knn_tune <-
-  knn_workflow %>% 
+  knn_wflow %>% 
   tune_grid(
     resamples = life_folds,
     grid = knn_grid,
@@ -55,7 +52,7 @@ knn_tune <-
     metrics = life_metrics
   )
 
-# Pace tuning code in hear
+# pace tuning code in hear
 toc(log = TRUE)
 
 # save runtime info
@@ -69,4 +66,39 @@ knn_tictoc <- tibble(
 )
 
 # write out results
-save(knn_tune, knn_tictoc, knn_workflow, file = "results/knn_tune_filter.rda")
+save(knn_tune, knn_tictoc, knn_wflow, file = "results/knn_tune.rda")
+
+## filtered recipe----
+# workflow
+knn_wflow <-
+  workflow() %>% 
+  add_model(knn_spec) %>% 
+  add_recipe(filtered_recipe)
+
+# tuning
+tic.clearlog()
+tic("KNN - Filtered")
+
+knn_tune <-
+  knn_wflow %>% 
+  tune_grid(
+    resamples = life_folds,
+    grid = knn_grid,
+    control = keep_pred,
+    metrics = life_metrics
+  )
+
+toc(log = TRUE)
+
+# save runtime info
+time_log <- tic.log(format = FALSE)
+
+knn_tictoc <- tibble(
+  model = time_log[[1]]$msg,
+  start_time = time_log[[1]]$tic,
+  end_time = time_log[[1]]$toc,
+  runtime = end_time - start_time
+)
+
+# write out results
+save(knn_tune, knn_tictoc, knn_wflow, file = "results/knn_tune_filter.rda")
