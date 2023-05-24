@@ -14,20 +14,13 @@ tidymodels_prefer()
 # basic recipe ----
 # load required objects 
 
-load("results/tune_bt.rda")
-
-load("results/tune_en.rda")
-
+load("results/bt_tune.rda")
+load("results/en_tune.rda")
 load("results/knn_tune.rda")
-
 load("results/mars_tune.rda")
-
 load("results/rf_tune.rda")
-
 load("results/svm_poly_tune.rda")
-
 load("results/svm_radial_tune.rda")
-
 load("results/nn_tune.rda")
 
 
@@ -148,12 +141,10 @@ load("results/nn_tune_filter.rda")
 load("results/rf_tune_filter.rda")
 load("results/svm_poly_tune_filter.rda")
 load("results/svm_radial_tune_filter.rda")
-load("results/tune_bt_filter.rda")
-load("results/tune_en_filter.rda")
+load("results/bt_tune_filter.rda")
+load("results/en_tune_filter.rda")
 
 # compare models
-  # tunes and tictoc are named the same between recipes
-  # make sure environment is correct before moving forward
 model_set <- 
   as_workflow_set( 
     "elastic net" = elastic_net_tune,
