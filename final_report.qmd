@@ -33,57 +33,24 @@ library(tidyverse)
 
 # handle common conflicts 
 tidymodels_prefer()
-
-# load required objects 
-# list.files("results", pattern = "*.rda", full.names = TRUE)
-#   for(i in "results") {
-#     load(i)
-#   }
-
-load("results/tune_bt.rda")
-
-load("results/tune_en.rda")
-
-load("results/knn_tune.rda")
-
-load("results/mars_tune.rda")
-
-load("results/rf_tune.rda")
-
-load("results/svm_poly_tune.rda")
-
-load("results/svm_radial_tune.rda")
-
-load("results/nn_tune.rda")
-
-
-load("initial_setup/tuning_setup.rda")
-
-# compare models
-model_set <- 
-  as_workflow_set( 
-    "elastic net" = elastic_net_tune,
-    "random forest" = rf_tune,
-    "k nearest neighbor" = knn_tune,
-    "boosted tree" = bt_tune,
-    "neural network" = nn_tune,
-    "svm polynomial" = svm_poly_tune,
-    "svm radial" = svm_radial_tune,
-    "mars" = mars_tune
-  )
-
-
-
-
-temp <- model_set %>% 
-  collect_metrics() %>% 
-  filter(.metric == "rmse") %>% 
-  slice_min(order_by = mean, by = wflow_id) %>% 
-  DT::datatable() 
-
-temp
+load("datatable1.rda")
+load("datatable2.rda")
 
 ```
 
 ## Kitchen Sink Results
-As we can see from this table, elastic net and k nearest neighbor had the lowest rmses. 
+
+```{r}
+temp
+```
+
+Our second recipe was the same as the first recipe, with the addition of `step_corr`, with a threshold of 0.5. As we can see in the results table below, the models performed significantly worse.
+```{r}
+temp2
+```
+This solidifies our choice to go with recipe 1. Because some of the RMSEs are very similar, we will be using run times to make a further decision. 
+```{r}
+time_df %>% 
+  DT::datatable()
+```
+

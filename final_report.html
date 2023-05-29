@@ -2822,22 +2822,18 @@ vertical-align: -.125em;
       el.style.width = "100%";
       el.style.height = "100%";
 
-      var rect = cel.getBoundingClientRect();
-
       return {
-        getWidth: function() { return rect.width; },
-        getHeight: function() { return rect.height; }
+        getWidth: function() { return cel.getBoundingClientRect().width; },
+        getHeight: function() { return cel.getBoundingClientRect().height; }
       };
 
     } else {
       el.style.width = px(sizing.width);
       el.style.height = px(sizing.height);
 
-      var rect = cel.getBoundingClientRect();
-
       return {
-        getWidth: function() { return rect.width; },
-        getHeight: function() { return rect.height; }
+        getWidth: function() { return cel.getBoundingClientRect().width; },
+        getHeight: function() { return cel.getBoundingClientRect().height; }
       };
     }
   }
@@ -5220,16 +5216,34 @@ l.each(u,function(a,b){l.fn.DataTable[a]=b});return u});
 <p>For our final project, our group is predicting life expectancy of countries based on variables such as economic conditions and health outcomes.</p>
 <p>Our first recipe was an all encompassing kitchen sink model.</p>
 <div class="cell">
-<div class="cell-output-display">
 
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f1d004df993aa3699b14" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-f1d004df993aa3699b14">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],["elastic net","elastic net","elastic net","elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars","mars","mars","mars","mars","mars","mars","mars"],["Preprocessor1_Model06","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model03","Preprocessor1_Model2","Preprocessor1_Model24","Preprocessor1_Model20","Preprocessor1_Model21","Preprocessor1_Model20","Preprocessor1_Model02","Preprocessor1_Model03","Preprocessor1_Model04","Preprocessor1_Model05","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model10"],["recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe"],["linear_reg","linear_reg","linear_reg","linear_reg","rand_forest","nearest_neighbor","boost_tree","mlp","svm_poly","svm_rbf","mars","mars","mars","mars","mars","mars","mars","mars"],["rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse"],["standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard"],[0.314947862623738,0.314947862623738,0.314947862623738,0.314947862623738,0.288486184350106,0.730425645484419,0.485775972056239,0.414803623875674,0.448359447303179,0.501263745338151,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649],[15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15],[0.00495813056436396,0.00495813056436396,0.00495813056436396,0.00495813056436396,0.00583012477490243,0.0135269350472217,0.0191837250393537,0.0232536318297965,0.00305590810209326,0.00344179884994391,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>wflow_id<\/th>\n      <th>.config<\/th>\n      <th>preproc<\/th>\n      <th>model<\/th>\n      <th>.metric<\/th>\n      <th>.estimator<\/th>\n      <th>mean<\/th>\n      <th>n<\/th>\n      <th>std_err<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[7,8,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-</div>
 </div>
 </section>
 <section id="kitchen-sink-results" class="level2">
 <h2 class="anchored" data-anchor-id="kitchen-sink-results">Kitchen Sink Results</h2>
-<p>As we can see from this table, elastic net and k nearest neighbor had the lowest rmses.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-be92dc1ea939b53daae9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-be92dc1ea939b53daae9">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],["elastic net","elastic net","elastic net","elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars","mars","mars","mars","mars","mars","mars","mars"],["Preprocessor1_Model06","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model03","Preprocessor1_Model2","Preprocessor1_Model110","Preprocessor1_Model25","Preprocessor1_Model21","Preprocessor1_Model20","Preprocessor1_Model02","Preprocessor1_Model03","Preprocessor1_Model04","Preprocessor1_Model05","Preprocessor1_Model07","Preprocessor1_Model08","Preprocessor1_Model09","Preprocessor1_Model10"],["recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe"],["linear_reg","linear_reg","linear_reg","linear_reg","rand_forest","nearest_neighbor","boost_tree","mlp","svm_poly","svm_rbf","mars","mars","mars","mars","mars","mars","mars","mars"],["rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse"],["standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard"],[0.314947862623738,0.314947862623738,0.314947862623738,0.314947862623738,0.289635464445208,0.730425645484419,0.495269117018044,0.355604875923435,0.448359447303179,0.501263745338151,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649,0.321393336042649],[15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15],[0.00495813056436396,0.00495813056436396,0.00495813056436396,0.00495813056436396,0.00614026891921537,0.0135269350472217,0.0167890605819631,0.0200284907884675,0.00305590810209326,0.00344179884994391,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321,0.00621279250754321]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>wflow_id<\/th>\n      <th>.config<\/th>\n      <th>preproc<\/th>\n      <th>model<\/th>\n      <th>.metric<\/th>\n      <th>.estimator<\/th>\n      <th>mean<\/th>\n      <th>n<\/th>\n      <th>std_err<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[7,8,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>Our second recipe was the same as the first recipe, with the addition of <code>step_corr</code>, with a threshold of 0.5. As we can see in the results table below, the models performed significantly worse.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ba82560a61926437bd2a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ba82560a61926437bd2a">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11"],["elastic net","elastic net","elastic net","elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars"],["Preprocessor1_Model01","Preprocessor1_Model02","Preprocessor1_Model03","Preprocessor1_Model04","Preprocessor1_Model02","Preprocessor1_Model1","Preprocessor1_Model105","Preprocessor1_Model10","Preprocessor1_Model27","Preprocessor1_Model25","Preprocessor1_Model10"],["recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe","recipe"],["linear_reg","linear_reg","linear_reg","linear_reg","rand_forest","nearest_neighbor","boost_tree","mlp","svm_poly","svm_rbf","mars"],["rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse","rmse"],["standard","standard","standard","standard","standard","standard","standard","standard","standard","standard","standard"],[3.653533164029,3.653533164029,3.653533164029,3.653533164029,0.856009138588306,1.0318820032037,1.54039902596709,1.96982232394278,1.49637935710462,1.61400930056532,2.45760326069609],[15,15,15,15,15,15,15,15,15,15,15],[0.128927810395634,0.128927810395634,0.128927810395634,0.128927810395634,0.0296546810437607,0.0288169589178098,0.0502703566700691,0.066163006349722,0.0455579519132469,0.065069589321932,0.0885230905799289]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>wflow_id<\/th>\n      <th>.config<\/th>\n      <th>preproc<\/th>\n      <th>model<\/th>\n      <th>.metric<\/th>\n      <th>.estimator<\/th>\n      <th>mean<\/th>\n      <th>n<\/th>\n      <th>std_err<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[7,8,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>This solidifies our choice to go with recipe 1.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0b1a10c988ea045edf0b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0b1a10c988ea045edf0b">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8"],["elastic net","random forest","k nearest neighbor","boosted tree","neural network","svm polynomial","svm radial","mars"],["18.0","247","14.1","79.0","45.8","54.0","52.6","5.42"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Model Type<\/th>\n      <th>Run Time (seconds)<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
 </section>
 
 </main>
