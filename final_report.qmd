@@ -20,16 +20,75 @@ from: markdown+emoji
 
 ## Introduction
 
-For our final project, our group is predicting life expectancy of countries based on variables such as economic conditions and health outcomes. 
+For our final project, our group is predicting life expectancy of countries for the year 2015 based on variables that can impact life expectancy such as economic conditions, illness prevalence, and health outcomes, using the [Life Expectancy Dataset](https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated) from WHO. This dataset includes life expectancy, health, immunization, economic, and demographic information from the years 2000-2015. We chose this data because we were curious to see how much various factors impact life expectancy. This is important because we can identify factors that shorten life expectancy to address these disparities and improve health outcomes.
 
-Our first recipe was an all encompassing kitchen sink model. 
+This data is originally formatted as a tidy table of average life expectancy by country and year with corresponding health measures. To avoid using a time-series analysis, we rearranged the data such that each country and year contained the average life expectancy from that year as well as the following year's average life expectancy. For example, the USA data from 2013 would contain both the average life expectancy in 2013 and the average life expectancy from 2014. This allows us to use the following year's life expectancy as our outcome variable (and the current year's as a predictor).
 
+The target variable will be average life expectancy in 2015. The data was split into training and testing datasets, with the current year's life expectancy from 2000-2013 in the training data, and those from 2014 in the testing data. Because of how we arranged our data, our model will be trained to predict the following year's life expectancy — because we have only up to 2015's actual values, we will be assessing how well our model does in predicting the life expectancy following 2014.
+
+## Data Overview -- Exploratory Data Analysis
+
+We explored our response variable (following year life expectancy) to analzye the distribution as well as check for missingness.
+```{r}
+# Load package(s) ----
+library(tidymodels)
+library(tidyverse)
+library(ggcorrplot)
+tidymodels_prefer()
+# load data + setup
+load("initial_setup/tuning_setup.rda")
+
+life_train %>% 
+  skimr::skim_without_charts(following_life_expect)
+
+ggplot(life_train, aes(x = following_life_expect)) +
+  geom_histogram() +
+  theme_minimal()
+```
+The average life expectancy is 68.8 years, with a spike around 70-75 years, before dipping again around 80 years.
+```{r}
+life_train %>% 
+  naniar::miss_var_summary()
+```
+There is no missing data, so we didn't have to worry about removing observations with missing values.
+
+We then conducted a collinearity assessment to ensure no two variables were correlated past a threshold of 0.7. A number of variables have high correlations, such as under_five_deaths and infant_deaths. Thus, we created a second recipe with step_corr with a correlation threshold of 0.7, which would remove the variables with a correlation coefficient higher than 0.7. We will use this second recipe on our best performing models after running the basic first recipe to see if model performance further improves.
+
+```{r}
+corrplotdata = life_train %>% 
+  select(-1, -19)
+
+corr = round(cor(corrplotdata), 1)
+ggcorrplot(corr)
+```
+
+## Methods
+
+We used the following models: boosted tree, elastic net, k-nearest-neighbors, logistic model, MARS, neural network, random forest, SVM polynomial, and SVM radial, as well as a null model for comparison. For resampling, we split the data into 10 folds with 3 repeats, which provided a good sampling of data to work with without extending model run times significantly. 
+
+To achieve a lower RMSE for the models, we tuned and updated the parameters as such:
+
+- boosted tree: mtry, learn_rate, min_n
+- elastic net: penalty, mixture
+- k-nearest neighbors: neighbors
+- MARS: num_terms, prod_degree
+- neural network: hidden_units, penalty
+- random forest: mtry, min_n, 
+- SVM Polynomial: cost, degree, scale_factor
+- SVM Radial: cost, rbf_sigma
+
+We used two recipes-- the first being an all-encompassing kitchen sink model, and the second with the addition of step_corr to remove highly correlated variables above a threshold of 0.5. 
+
+Our evaluation metrics were RMSE and R^2 and MAE, with RMSE as the initial standard of comparison for model selection. We first ran the evaluation metrics on all of our models and identified the two best performing models, which we then fit to the testing dataset. We also  tried the second recipe on the two best performing models to see if it further improves performance.
+
+## Model Building & Selection Results
+
+Below is our first recipe's (the all-encompassing kitchen sink model) performance, using RMSE as the evaluation metric.
 
 ```{r}
 # Load package(s) ----
 library(tidymodels)
 library(tidyverse)
-
 
 # handle common conflicts 
 tidymodels_prefer()
@@ -38,19 +97,25 @@ load("datatable2.rda")
 
 ```
 
-## Kitchen Sink Results
 
 ```{r}
-temp
+# kitchen sink performance
+temp_table
+  
 ```
 
-Our second recipe was the same as the first recipe, with the addition of `step_corr`, with a threshold of 0.5. As we can see in the results table below, the models performed significantly worse.
+Our second recipe, as we can see in the results table below, performed significantly worse.
+
 ```{r}
-temp2
+temp2_table
 ```
-This solidifies our choice to go with recipe 1. Because some of the RMSEs are very similar, we will be using run times to make a further decision. 
+
+This solidifies our choice to go with recipe 1. Because some of the RMSEs are very similar, we used run times to make a further decision.
+
 ```{r}
 time_df %>% 
   DT::datatable()
 ```
+
+
 
