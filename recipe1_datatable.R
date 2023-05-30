@@ -13,8 +13,8 @@ load("results/mars_tune.rda")
 load("results/rf_tune.rda")
 load("results/svm_poly_tune.rda")
 load("results/svm_radial_tune.rda")
-
 load("results/nn_tune.rda")
+
 load("initial_setup/tuning_setup.rda")
 
 
@@ -30,8 +30,6 @@ model_set <-
     "svm radial" = svm_radial_tune,
     "mars" = mars_tune
   )
-
-
 
 
 temp <- model_set %>% 
@@ -68,5 +66,3 @@ time_df %>%
   DT::datatable()
 
 save(temp, time_df, file = "datatable1.rda")
-
-

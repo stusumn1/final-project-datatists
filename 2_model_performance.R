@@ -12,6 +12,7 @@ library(gt)
 tidymodels_prefer()
 
 # basic recipe ----
+
 # load required objects 
 
 load("results/bt_tune.rda")
@@ -23,13 +24,13 @@ load("results/svm_poly_tune.rda")
 load("results/svm_radial_tune.rda")
 load("results/nn_tune.rda")
 
-
 load("initial_setup/tuning_setup.rda")
 
 # compare models
+
 model_set <- 
   as_workflow_set( 
-    "elastic net" = elastic_net_tune,
+    "elastic net" = en_tune,
     "random forest" = rf_tune,
     "k nearest neighbor" = knn_tune,
     "boosted tree" = bt_tune,
@@ -46,14 +47,13 @@ model_set <-
 #   filter(.metric == "rmse") %>%
 #   group_by(wflow_id) %>%
 #   slice_min(order_by = mean)
-
-View(
-  rank_results(model_set, rank_metric = "rmse") %>% 
-  filter(.metric == "rmse") %>% 
-  group_by(wflow_id) %>%
-  mutate(within_wflow_rank = row_number()) %>% 
-  filter(within_wflow_rank == 1)
-  )
+# 
+# temp <- model_set %>% 
+#   rank_results(model_set, rank_metric = "rmse") %>% 
+#   filter(.metric == "rmse") %>% 
+#   group_by(wflow_id) %>%
+#   mutate(within_wflow_rank = row_number()) %>% 
+#   filter(within_wflow_rank == 1)
 
 temp <- model_set %>% 
   collect_metrics() %>% 
@@ -61,55 +61,58 @@ temp <- model_set %>%
   slice_min(order_by = mean, by = wflow_id) %>% 
   mutate(mean = round(mean, 3), std_err = round(std_err, 3)) %>% 
   select(-2, -3, -4, -6, -8) %>% 
+  arrange(mean) %>% 
   DT::datatable()
 
-temp %>% 
-  select(wflow_id, mean) %>% 
-  mutate(mean = round(mean, 3)) %>% 
-  (order_by = mean) %>% 
-  DT::datatable() 
+#Timing
 
-bind_cols()
-
-model_set_2 <- 
-  as.data.frame( 
-    "elastic net" = en_tic_toc,
-    "random forest" = rf_tic_toc,
-    "k nearest neighbor" = knn_tic_toc,
-    "boosted tree" = bt_tic_toc,
-    "neural network" = nn_tic_toc,
-    "svm polynomial" = svm_poly_tic_toc,
-    "svm radial" = svm_tic_toc,
-    "mars" = mars_tic_toc
-  )
-
-
-model_type <- c("elastic net",
-                "random forest",
-                "k nearest neighbor",
-                "boosted tree",
-                "neural network",
-                "svm polynomial",
-                "svm radial",
-                "mars")
-
-times <- c("18.0",
-           "247",
-           "14.1",
-           "79.0",
-           "45.8",
-           "54.0",
-           "52.6",
-           "5.42")
-
-time_tibble <- bind_cols(model_type, times)
-time_df <- as.data.frame(time_tibble)
-
-names(time_df) = c("Model Type", "Run Time (seconds)")
-
-time_df %>% 
+table_times <- tibble(rbind(nn_tic_toc,
+                            bt_tictoc,
+                            mars_tictoc,
+                            en_tictoc,
+                            knn_tictoc,
+                            rf_tictoc,
+                            svm_poly_tictoc,
+                            svm_radial_tictoc)) %>% 
   DT::datatable()
 
+# model_set_2 <- 
+#   as_tibble( 
+#     "elastic net" = en_tictoc,
+#     "random forest" = rf_tictoc,
+#     "k nearest neighbor" = knn_tictoc,
+#     "boosted tree" = bt_tictoc,
+#     "neural network" = nn_tic_toc,
+#     "svm polynomial" = svm_poly_tictoc,
+#     "svm radial" = svm_radial_tictoc,
+#     "mars" = mars_tictoc
+#   )
+# 
+# model_type <- c("elastic net",
+#                 "random forest",
+#                 "k nearest neighbor",
+#                 "boosted tree",
+#                 "neural network",
+#                 "svm polynomial",
+#                 "svm radial",
+#                 "mars")
+# 
+# times <- c("18.0",
+#            "247",
+#            "14.1",
+#            "79.0",
+#            "45.8",
+#            "54.0",
+#            "52.6",
+#            "5.42")
+# 
+# time_tibble <- bind_cols(model_type, times)
+# time_df <- as.data.frame(time_tibble)
+# 
+# names(time_df) = c("Model Type", "Run Time (seconds)")
+# 
+# time_df %>% 
+#   DT::datatable()
 
 
 nn_spec <-
@@ -117,7 +120,6 @@ nn_spec <-
       penalty= tune()) %>%
   set_engine('nnet') %>%
   set_mode('classification')
-
 
 # workflow ----
 
@@ -134,6 +136,7 @@ nn_workflow_tuned <- nn_wflow %>%
 nn_fit <- fit(nn_workflow_tuned, wf_train)
 
 # filtered recipe ----
+
 # load required objects
 load("results/mars_tune_filter.rda")
 load("results/knn_tune_filter.rda")
@@ -145,19 +148,20 @@ load("results/bt_tune_filter.rda")
 load("results/en_tune_filter.rda")
 
 # compare models
-model_set <- 
+
+model_set_filter <- 
   as_workflow_set( 
-    "elastic net" = elastic_net_tune,
-    "random forest" = rf_tune,
-    "k nearest neighbor" = knn_tune,
-    "boosted tree" = bt_tune,
-    "neural network" = nn_tune,
-    "svm polynomial" = svm_poly_tune,
-    "svm radial" = svm_radial_tune,
-    "mars" = mars_tune
+    "elastic net" = en_tune_filter,
+    "random forest" = rf_tune_filter,
+    "k nearest neighbor" = knn_tune_filter,
+    "boosted tree" = bt_tune_filter,
+    "neural network" = nn_tune_filter,
+    "svm polynomial" = svm_poly_tune_filter,
+    "svm radial" = svm_radial_tune_filter,
+    "mars" = mars_tune_filter
   )
 
-filter_models <- model_set %>% 
+filter_models <- model_set_filter %>% 
   collect_metrics() %>% 
   filter(.metric == "rmse") %>% 
   slice_min(order_by = mean, by = wflow_id) %>% 
@@ -165,7 +169,6 @@ filter_models <- model_set %>%
   select(-2, -3, -4, -6, -8) %>% 
   DT::datatable()
 
-filter_models
 
 filter_tictoc <- bind_rows(en_tictoc, 
                            rf_tictoc, 
@@ -179,4 +182,3 @@ filter_tictoc <- bind_rows(en_tictoc,
 gt(filter_tictoc) %>% 
   gt::cols_hide(c(2, 3)) %>% 
   gt::cols_label(model = "Model", runtime = "Runtime")
-
