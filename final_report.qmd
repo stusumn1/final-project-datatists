@@ -20,15 +20,16 @@ from: markdown+emoji
 
 ## Introduction
 
-For our final project, our group is predicting life expectancy of countries for the year 2015 based on variables that can impact life expectancy such as economic conditions, illness prevalence, and health outcomes, using the [Life Expectancy Dataset](https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated) from WHO. This dataset includes life expectancy, health, immunization, economic, and demographic information from the years 2000-2015. We chose this data because we were curious to see how much various factors impact life expectancy. This is important because we can identify factors that shorten life expectancy to address these disparities and improve health outcomes.
+For our final project, our group is predicting life expectancy of countries for the year 2015 based on variables that can impact life expectancy such as economic conditions, illness prevalence, and health outcomes, using the [Life Expectancy Dataset](https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated) from the World Health Organization. This dataset includes life expectancy, health, immunization, economic, and demographic information from the years 2000-2015. We chose this data because we were curious to see how much various factors impact life expectancy. The importance of this project lies in identifying what factors shorten life expectancy, generating insights that let us further understand and address these disparities with the final outcome of improving health perspectives.
 
 This data is originally formatted as a tidy table of average life expectancy by country and year with corresponding health measures. To avoid using a time-series analysis, we rearranged the data such that each country and year contained the average life expectancy from that year as well as the following year's average life expectancy. For example, the USA data from 2013 would contain both the average life expectancy in 2013 and the average life expectancy from 2014. This allows us to use the following year's life expectancy as our outcome variable (and the current year's as a predictor).
 
-The target variable will be average life expectancy in 2015. The data was split into training and testing datasets, with the current year's life expectancy from 2000-2013 in the training data, and those from 2014 in the testing data. Because of how we arranged our data, our model will be trained to predict the following year's life expectancy — because we have only up to 2015's actual values, we will be assessing how well our model does in predicting the life expectancy following 2014.
+The target variable will be average life expectancy in 2015. The data was split into training and testing datasets, with the current year's life expectancy from 2000-2013 in the training data, and those from 2014 in the testing data. Because of how we arranged our data, our model will be trained to predict the following year's life expectancy --- because we have only up to 2015's actual values, we will be assessing how well our model does in predicting the life expectancy following 2014.
 
 ## Data Overview -- Exploratory Data Analysis
 
 We explored our response variable (following year life expectancy) to analyze the distribution as well as check for missingness.
+
 ```{r}
 # Load package(s) ----
 library(tidymodels)
@@ -47,11 +48,14 @@ ggplot(life_train, aes(x = following_life_expect)) +
   geom_histogram() +
   theme_minimal()
 ```
+
 The average life expectancy is 68.8 years, with a spike around 70-75 years, before dipping again around 80 years.
+
 ```{r}
 life_train %>% 
   naniar::miss_var_summary()
 ```
+
 There is no missing data, so we didn't have to worry about removing observations with missing values.
 
 We then conducted a collinearity assessment to ensure no two variables were correlated past a threshold of 0.7. A number of variables have high correlations, such as under_five_deaths and infant_deaths. Thus, we created a second recipe with step_corr with a correlation threshold of 0.7, which would remove the variables with a correlation coefficient higher than 0.7. We will use this second recipe on our best performing models after running the basic first recipe to see if model performance further improves.
@@ -66,22 +70,22 @@ ggcorrplot(corr)
 
 ## Methods
 
-We used the following models: boosted tree, elastic net, k-nearest-neighbors, logistic model, MARS, neural network, random forest, SVM polynomial, and SVM radial, as well as a null model for comparison. For resampling, we split the data into 10 folds with 3 repeats, which provided a good sampling of data to work with without extending model run times significantly. 
+We used the following models: boosted tree, elastic net, k-nearest-neighbors, logistic model, MARS, neural network, random forest, SVM polynomial, and SVM radial, as well as a null model for comparison. For resampling, we split the data into 10 folds with 3 repeats, which provided a good sampling of data to work with without extending model run times significantly.
 
 To achieve a lower RMSE for the models, we tuned and updated the parameters as such:
 
-- boosted tree: mtry, learn_rate, min_n
-- elastic net: penalty, mixture
-- k-nearest neighbors: neighbors
-- MARS: num_terms, prod_degree
-- neural network: hidden_units, penalty
-- random forest: mtry, min_n, 
-- SVM Polynomial: cost, degree, scale_factor
-- SVM Radial: cost, rbf_sigma
+-   boosted tree: mtry, learn_rate, min_n
+-   elastic net: penalty, mixture
+-   k-nearest neighbors: neighbors
+-   MARS: num_terms, prod_degree
+-   neural network: hidden_units, penalty
+-   random forest: mtry, min_n,
+-   SVM Polynomial: cost, degree, scale_factor
+-   SVM Radial: cost, rbf_sigma
 
-We used two recipes-- the first being an all-encompassing kitchen sink model, and the second with the addition of step_corr to remove highly correlated variables above a threshold of 0.7. 
+We used two recipes-- the first being an all-encompassing kitchen sink model, and the second with the addition of step_corr to remove highly correlated variables above a threshold of 0.7.
 
-Our evaluation metrics were RMSE and R^2 and MAE, with RMSE as the initial standard of comparison for model selection. We first ran the evaluation metrics on all of our models and identified the two best performing models, which we then fit to the testing dataset. We also  tried the second recipe on the two best performing models to see if it further improves performance.
+Our evaluation metrics were RMSE and R\^2 and MAE, with RMSE as the initial standard of comparison for model selection. We first ran the evaluation metrics on all of our models and identified the two best performing models, which we then fit to the testing dataset. We also tried the second recipe on the two best performing models to see if it further improves performance.
 
 ## Model Building & Selection Results
 
@@ -98,7 +102,6 @@ load("datatable1.rda")
 load("datatable2.rda")
 
 ```
-
 
 ```{r}
 # kitchen sink performance
@@ -125,7 +128,6 @@ time_df %>%
   DT::datatable()
 ```
 
-
 It is in this way that we chose Elastic Net to be our winning model.
 
 ## Final Model Analysis
@@ -146,7 +148,8 @@ autoplot(en_tune, metric = "rmse")
 
 Given that the optimal parameters for our Elastic Net model are a penalty of 0.0000000001 and a mixture of 0.288, we updated this information in order to first fit the testing part of the training data into the model and finally the testing dataset.
 
-The obtained performance of our winninng model is the following:
+The obtained performance of our winning model is the following:
+
 ```{r}
 #| label: winniing_model_performance
 
@@ -155,7 +158,8 @@ load("tables/final_table.rda")
 final_table %>% 
   DT::datatable()
 ```
-As we can see, the model performed almost as well as it did in the training dataset, which is a really good indicator. Additionally, look at the plot below of true values versus predicted values shows a nearly linear line, furthermore proving good performance on the testing data. 
+
+As we can see, the model performed almost as well as it did in the training dataset, which is a really good indicator. Additionally, looking at the plot below of true values vs. predicted values let us see an almost perfect relation, furthermore proving good performance on the testing data.
 
 ```{r}
 ggplot 
@@ -163,5 +167,16 @@ ggplot
 
 ## Conclusion
 
+To conclude with this report about the prediction of life expectancy for the year 2015, we can say there are several key findings. 
+First of all, we found that some correlations not always are harmful for a predictive problem. As we saw, our models performed worst once the correlation between some variables was treated and eliminated. This let us see that maybe the correlation was adding more information than harming the predictive model. In other words, we are learning that in the field of surveing and data gathering, some questions/variables that at first sight might seem redundant (for example 'under_five_deaths' and 'infant_deaths'), ended up providing us with important information that let our predictive work perform better.
+Secondly, we conclude that when performing predictive models, running times are an essential piece of information. As we look to move forward in our data science careers, a common issue we will more frequently encounter will be computational cost. In this way, paying attention to running times let us not only save resources, but also as seen in this project, decide between models that perform similarly. If the performance is almost the same but the computational costs of Elastic Net is better that the one from Random Forest,the trade-off might be worth it.
+
 ## References
 
+The dataset used for this project was obtained in the website Kaggle.com, specifically at the following link <https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated>
+
+Additionally, for completion of this project we used support from the following books:
+
+-   "Tidy Modeling with R" - Max Kuhn and Julia Silge (<https://www.tmwr.org/>)
+
+-   "Feature Engineering and Selection: A Practical Approach for Predictive Models" - MaxKuhn and Kjell Johnson (<http://www.feat.engineering/>)
