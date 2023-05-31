@@ -45,8 +45,8 @@ library(ggcorrplot)
 tidymodels_prefer()
 # load data + setup
 load("initial_setup/tuning_setup.rda")
-load("ci_plot.rda")
-load("ggplot.rda")
+load("results/ci_plot.rda")
+load("tables/ggplot.rda")
 
 life_train %>% 
   skimr::skim_without_charts(following_life_expect)
@@ -105,8 +105,8 @@ library(tidyverse)
 
 # handle common conflicts 
 tidymodels_prefer()
-load("datatable1.rda")
-load("datatable2.rda")
+load("tables/datatable1.rda")
+load("tables/datatable2.rda")
 
 ```
 
@@ -131,8 +131,11 @@ ci_plot
 Even though considering the confidence intervals, the random forest model performed better than the elastic net model for the RMSEs, we decided to take a look at run time we used run times to make a further decision.
 
 ```{r}
+load("tables/timedf.rda")
+
 time_df %>% 
   DT::datatable()
+
 ```
 
 It is in this way that we chose Elastic Net to be our winning model.
@@ -150,7 +153,8 @@ en_tune %>%
   select_best(metric = "rmse") %>% 
   DT::datatable()
 
-autoplot(en_tune, metric = "rmse")
+autoplot(en_tune, metric = "rmse") +
+  theme_minimal()
 ```
 
 Given that the optimal parameters for our Elastic Net model are a penalty of 0.0000000001 and a mixture of 0.288, we updated this information in order to first fit the testing part of the training data into the model and finally the testing dataset.
@@ -162,7 +166,7 @@ The obtained performance of our winning model is the following:
 
 load("tables/final_table.rda")
 
-final_table %>% 
+final_table %>%
   DT::datatable()
 ```
 
@@ -176,7 +180,7 @@ ggplot
 
 To conclude with this report about the prediction of life expectancy for the year 2015, we can say there are several key findings. 
 First of all, we found that some correlations not always are harmful for a predictive problem. As we saw, our models performed worst once the correlation between some variables was treated and eliminated. This let us see that maybe the correlation was adding more information than harming the predictive model. In other words, we are learning that in the field of surveing and data gathering, some questions/variables that at first sight might seem redundant (for example 'under_five_deaths' and 'infant_deaths'), ended up providing us with important information that let our predictive work perform better.
-Secondly, we conclude that when performing predictive models, running times are an essential piece of information. As we look to move forward in our data science careers, a common issue we will more frequently encounter will be computational cost. In this way, paying attention to running times let us not only save resources, but also as seen in this project, decide between models that perform similarly. If the performance is almost the same but the computational costs of Elastic Net is better that the one from Random Forest,the trade-off might be worth it.
+Secondly, we conclude that when performing predictive models, running times are an essential piece of information. As we look to move forward in our data science careers, a common issue we will more frequently encounter will be computational cost. In this way, paying attention to running times let us not only save resources, but also as seen in this project, decide between models that perform similarly. If the performance is almost the same but the computational costs of Elastic Net is better that the one from Random Forest, the trade-off might be worth it. In the future, we might look at further variables that affect life expectancy and create models where those variables are taken into account as well.
 
 ## References
 
