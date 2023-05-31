@@ -1,0 +1,32 @@
+---
+title: "Life Expectancy Executive Summary"
+subtitle: "Data Science 3 with R (STAT 301-3)"
+author: "Alice Meng, Nina Meng, Stuart Sumner, Emiliano Ghislieri"
+
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    embed-resources: true
+    echo: false
+    link-external-newwindow: true
+    
+execute:
+  warning: false
+  message: false
+  
+from: markdown+emoji 
+---
+
+## Purpose of the Report
+For our final project, our group predicted life expectancy of countries for the year 2015 based on variables that can impact life expectancy such as economic conditions, illness prevalence, and health outcomes, using the [Life Expectancy Dataset](https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated) from WHO. This dataset includes life expectancy, health, immunization, economic, and demographic information from the years 2000-2015. We chose this data because we were curious to see how much various factors impact life expectancy. This is important because we can identify factors that shorten life expectancy to address these disparities and improve health outcomes.
+
+## Results + Conclusion 
+We tried the following models: boosted tree, elastic net, k-nearest-neighbors, logistic model, MARS, neural network, random forest, SVM polynomial, and SVM radial, as well as a null model for comparison. The elastic net performed the best with the shortest run time, achieving a low RMSE of 0.279 on the testing dataset.
+
+```{r}
+library(tidyverse)
+load("ggplot.rda")
+ggplot
+```
+The plot true values versus predicted values shows a nearly linear line, further proving good performance on the testing data. 
