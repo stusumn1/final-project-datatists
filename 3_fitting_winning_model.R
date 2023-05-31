@@ -11,29 +11,29 @@ tidymodels_prefer()
 set.seed(86420)
 
 #Load require objects
-load("results/rf_tune_filter.rda")
+load("results/en_tune.rda")
 
 load("initial_setup/tuning_setup.rda")
 
 #Quickly access the tuning parameters of the winning model
 
-rf_tune %>% 
+en_tune %>% 
   select_best(metric = "rmse") 
 
 #Specifically setting the winning model
 
-rf_spec_win <- rand_forest(mode = "regression", 
-                   mtry = 7, 
-                   min_n = 2) %>% 
-  set_engine("ranger")
+en_spec_win <- linear_reg(mode = "regression", 
+                   penalty = 0.0000000001, 
+                   mixture = 0.288) %>% 
+  set_engine("glmnet")
 
 #Updating the workflow
 
-win_workflow <- rf_tune %>%
+win_workflow <- en_tune %>%
   extract_workflow() %>%
-  update_model(rf_spec_win)
+  update_model(en_spec_win)
 
-save(win_workflow, file = "results/rf_tune_win.rda")
+save(win_workflow, file = "results/en_tune_win.rda")
 
 #Fitting the winning model
 
@@ -41,9 +41,9 @@ save(win_workflow, file = "results/rf_tune_win.rda")
 
 #We already have the data splitted.
 
-#Fitting the winning rf model in the training dataset.
+#Fitting the winning en model in the training dataset.
 
-rf_fit <-
+en_fit <-
   parsnip::fit(win_workflow, data = life_train)
 
 #Model's performance
@@ -51,7 +51,7 @@ rf_fit <-
 #RMSE
 
 final_prediction <- life_test %>%    
-  bind_cols(predict(rf_fit, new_data = life_test, type = "numeric")) %>% 
+  bind_cols(predict(en_fit, new_data = life_test, type = "numeric")) %>% 
   select(following_life_expect, .pred)
 
 metrics_rmse <- metric_set(rmse)
