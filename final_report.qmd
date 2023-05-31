@@ -1,6 +1,6 @@
 ---
 title: "Life Expectancy Final Report"
-subtitle: "Data Science 2 with R (STAT 301-2)"
+subtitle: "Data Science 3 with R (STAT 301-3)"
 author: "Alice Meng, Nina Meng, Stuart Sumner, Emiliano Ghislieri"
 
 format:
@@ -37,6 +37,8 @@ library(ggcorrplot)
 tidymodels_prefer()
 # load data + setup
 load("initial_setup/tuning_setup.rda")
+load("ci_plot.rda")
+load("ggplot.rda")
 
 life_train %>% 
   skimr::skim_without_charts(following_life_expect)
@@ -110,12 +112,19 @@ Our second recipe, as we can see in the results table below, performed significa
 temp2_table
 ```
 
-This solidifies our choice to go with recipe 1. Because some of the RMSEs obtained using recipe 1 are very similar, we used run times to make a further decision.
+This solidifies our choice to go with recipe 1.
+
+```{r}
+ci_plot
+```
+
+Even though considering the confidence intervals, the random forest model performed better than the elastic net model for the RMSEs, we decided to take a look at run time we used run times to make a further decision.
 
 ```{r}
 time_df %>% 
   DT::datatable()
 ```
+
 
 It is in this way that we chose Elastic Net to be our winning model.
 
@@ -129,7 +138,10 @@ Given we chose the Elastic Net model as our winning model, we need now to know t
 load("results/en_tune.rda")
 
 en_tune %>% 
-  select_best(metric = "rmse") 
+  select_best(metric = "rmse") %>% 
+  DT::datatable()
+
+autoplot(en_tune, metric = "rmse")
 ```
 
 Given that the optimal parameters for our Elastic Net model are a penalty of 0.0000000001 and a mixture of 0.288, we updated this information in order to first fit the testing part of the training data into the model and finally the testing dataset.
@@ -140,7 +152,16 @@ The obtained performance of our winninng model is the following:
 
 load("tables/final_table.rda")
 
-final_table
+final_table %>% 
+  DT::datatable()
 ```
-As we can see, the model performed almost as well as it did in the training dataset, which is a really good indicator.
+As we can see, the model performed almost as well as it did in the training dataset, which is a really good indicator. Additionally, look at the plot below of true values versus predicted values shows a nearly linear line, furthermore proving good performance on the testing data. 
+
+```{r}
+ggplot 
+```
+
+## Conclusion
+
+## References
 

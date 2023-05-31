@@ -38,7 +38,9 @@ temp <- model_set %>%
   slice_min(order_by = mean, by = wflow_id) %>% 
   DT::datatable() 
 
-temp
+ci_plot <- model_set %>% 
+  collect_metrics() %>% 
+  filter(.metric == "rmse")
 
 model_type <- c("elastic net",
                 "random forest",
@@ -67,3 +69,5 @@ time_df %>%
   DT::datatable()
 
 save(temp, time_df, file = "datatable1.rda")
+
+

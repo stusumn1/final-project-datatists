@@ -15,6 +15,7 @@ load("results/en_tune.rda")
 
 load("initial_setup/tuning_setup.rda")
 
+load("results/en_tune.rda")
 #Quickly access the tuning parameters of the winning model
 
 en_tune %>% 
@@ -51,8 +52,26 @@ en_fit <-
 #RMSE
 
 final_prediction <- life_test %>%    
-  bind_cols(predict(en_fit, new_data = life_test, type = "numeric")) %>% 
-  select(following_life_expect, .pred)
+  bind_cols(predict(en_fit, new_data = life_test, type = "numeric"))
+
+  # select(following_life_expect, .pred)
+
+life_test <- life_test %>% 
+  bind_cols(predict(en_fit, .))
+
+# comparing predictions with true data
+ggplot <- ggplot(life_test) +
+  aes(x = following_life_expect,
+      y = .pred) +
+  geom_point() +
+  coord_obs_pred() +
+  labs(x = "True values", 
+       y = "Predicted Values") +
+  theme_minimal()
+
+
+save(ggplot, file = "ggplot.rda")
+
 
 metrics_rmse <- metric_set(rmse)
 
@@ -67,4 +86,26 @@ final_table <- tibble(metrics_rmse(final_prediction,
 #                                  truth = following_life_expect, 
 #                                  estimate = .pred))
 
+autoplot(en_tune, metric = "rmse")
+
+following_life_expe <- life_test %>% 
+ following_life_expect
+.pred <- final_prediction %>% 
+  select(.pred)
+
+save(following_life_expect, .pred, file = "data/predictions.csv")
+
+predictions <- read_csv("data/predictions.csv")
+
+final_table %>% 
+  ggplot(aes(x = following_life_expect, y = .pred)) +
+  geom_point(stat = "identity")
+
+life_test %>% 
+  ggplot(aes(x = following_life_expect, y = .pred)) +
+  geom_point()
+
 save(final_table, file = "tables/final_table.rda")
+
+
+
