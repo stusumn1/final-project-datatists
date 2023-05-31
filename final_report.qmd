@@ -17,6 +17,13 @@ execute:
   
 from: markdown+emoji 
 ---
+::: {.callout-tip}
+
+## Github Repo Link
+
+[https://github.com/STAT301-3-2023SP/final-project-datatists.git](https://github.com/STAT301-3-2023SP/final-project-datatists.git)
+
+:::
 
 ## Introduction
 
