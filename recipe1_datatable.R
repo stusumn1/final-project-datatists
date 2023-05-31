@@ -39,6 +39,7 @@ temp <- model_set %>%
   DT::datatable() 
 
 temp
+
 model_type <- c("elastic net",
                 "random forest",
                 "k nearest neighbor",
