@@ -68,6 +68,8 @@ names(time_df) = c("Model Type", "Run Time (seconds)")
 time_df %>% 
   DT::datatable()
 
-save(temp, time_df, file = "datatable1.rda")
+# save(temp, time_df, file = "datatable1.rda")
+
+save(time_df, file = "tables/timedf.rda")
 
 

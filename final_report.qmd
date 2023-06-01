@@ -42,25 +42,34 @@ We explored our response variable (following year life expectancy) to analyze th
 library(tidymodels)
 library(tidyverse)
 library(ggcorrplot)
+library(kableExtra)
 tidymodels_prefer()
 # load data + setup
 load("initial_setup/tuning_setup.rda")
 load("results/ci_plot.rda")
 load("tables/ggplot.rda")
 
-life_train %>% 
+
+y_var <- life_train %>% 
   skimr::skim_without_charts(following_life_expect)
 
+knitr::kable(y_var, caption = "Following Life Expenctancy Distribution") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
 ggplot(life_train, aes(x = following_life_expect)) +
-  geom_histogram() +
+  geom_histogram(fill = "white", color = "black") +
   theme_minimal()
 ```
 
 The average life expectancy is 68.8 years, with a spike around 70-75 years, before dipping again around 80 years.
 
 ```{r}
-life_train %>% 
+miss_summary <- life_train %>% 
   naniar::miss_var_summary()
+
+
+knitr::kable(miss_summary, caption = "Missingness") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
 ```
 
 There is no missing data, so we didn't have to worry about removing observations with missing values.
@@ -131,10 +140,11 @@ ci_plot
 Even though considering the confidence intervals, the random forest model performed better than the elastic net model for the RMSEs, we decided to take a look at run time we used run times to make a further decision.
 
 ```{r}
+library(kableExtra)
 load("tables/timedf.rda")
 
-time_df %>% 
-  DT::datatable()
+knitr::kable(time_df, caption = "Best Penalty Mixtures") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
 
@@ -149,9 +159,11 @@ Given we chose the Elastic Net model as our winning model, we need now to know t
 
 load("results/en_tune.rda")
 
-en_tune %>% 
-  select_best(metric = "rmse") %>% 
-  DT::datatable()
+en_table <- en_tune %>% 
+  select_best(metric = "rmse") 
+
+knitr::kable(en_table, caption = "Recipe 1 Run Times") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
 
 autoplot(en_tune, metric = "rmse") +
   theme_minimal()
@@ -163,11 +175,12 @@ The obtained performance of our winning model is the following:
 
 ```{r}
 #| label: winniing_model_performance
-
+library(kableExtra)
 load("tables/final_table.rda")
 
-final_table %>%
-  DT::datatable()
+
+knitr::kable(final_table, caption = "Test Data RMSE with Elastic Net Model") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
 ```
 
 As we can see, the model performed almost as well as it did in the training dataset, which is a really good indicator. Additionally, looking at the plot below of true values vs. predicted values let us see an almost perfect relation, furthermore proving good performance on the testing data.
