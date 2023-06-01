@@ -57,7 +57,8 @@ knitr::kable(y_var, caption = "Following Life Expenctancy Distribution") %>%
 
 ggplot(life_train, aes(x = following_life_expect)) +
   geom_histogram(fill = "white", color = "black") +
-  theme_minimal()
+  theme_minimal() +
+  labs(x = "Following Life Expectancy")
 ```
 
 The average life expectancy is 68.8 years, with a spike around 70-75 years, before dipping again around 80 years.

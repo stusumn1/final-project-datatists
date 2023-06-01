@@ -34,7 +34,7 @@ win_workflow <- en_tune %>%
   extract_workflow() %>%
   update_model(en_spec_win)
 
-save(win_workflow, file = "results/en_tune_win.rda")
+# save(win_workflow, file = "results/en_tune_win.rda")
 
 #Fitting the winning model
 
@@ -65,7 +65,7 @@ ggplot <- ggplot(life_test) +
       y = .pred) +
   geom_point() +
   coord_obs_pred() +
-  labs(x = "True values", 
+  labs(x = "True Values", 
        y = "Predicted Values") +
   theme_minimal()
 
