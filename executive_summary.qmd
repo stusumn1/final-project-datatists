@@ -33,7 +33,7 @@ We tried the following models: boosted tree, elastic net, k-nearest-neighbors, l
 
 ```{r}
 library(tidyverse)
-load("ggplot.rda")
+load("tables/ggplot.rda")
 ggplot
 ```
 The plot true values versus predicted values shows a nearly linear line, further proving good performance on the testing data. 
